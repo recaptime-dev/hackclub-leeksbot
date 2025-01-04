@@ -1,17 +1,17 @@
 # Project maintainers
 
 The following people are responsible for maintaining the Hack Club Leeks Slack app
-source code and going through the leek review queue:
+source code and going through the leek flags review queue in Slack:
 
 * [Andrei Jiroh Halili](htttps://mau.dev/ajhalili2006) - lead maintainer
   * Hack Club Slack handle: `ajhalili2006` (ID: `U07CAPBB9B5`)
   * Hack Clubber since Arcade 2024, also SABDFL and Open-source Dev at RecapTime.dev
-  * GPG keys for CoC reports ans security vunlerabilities: `4D5E631758CB9CC45941B1CE67BFC91B3DA12BE8` / `A715100E58CF60500EE159652F384539C700B263`
+  * GPG keys for CoC/abuse reports and security vunlerabilities: `4D5E631758CB9CC45941B1CE67BFC91B3DA12BE8` / `A715100E58CF60500EE159652F384539C700B263`
 
 ## Adding yourself to the list
 
-To request to be a maintainer, use the following template when
-appending the list above:
+To request to be a maintainer (or if you're currently part of the review queue team),
+use the following template when appending the list above:
 
 ```md
 * [Your name here](link to your website or code forge profile)
@@ -21,7 +21,8 @@ appending the list above:
 ```
 
 Then send a patch [following the instructions in the contributing guidelines].
-Once approved and merged, you'll expect a invite to maintain the GitHub repo and
-a notification on being granted the maintainer role on the GitLab repo.
+Once approved and merged, you'll expect a invite to maintain the GitHub repo.
+If you are in the Slack, you will be added into the Leeks Bot Review Queue user
+group (`@leeksbot-review-queue-team`)
 
-[following the instructions in the contributing guidelines]: ../CONTRIBUTING.md#sending-patches
+[following the instructions in the contributing guidelines]: ./contributing.md
