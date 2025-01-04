@@ -3,14 +3,17 @@ import { Blocks, MarkdownText, PlainText, TextSection } from "../../lib/block-bu
 import { logOps, prisma } from "../../app";
 import { detectEnvForChannel, getBaseSlashCommand } from "../../lib/env";
 import { allowlistedChannels, queueChannel } from "../../lib/constants";
-import { dequeuedMessage, dontUseItHere, generateReviewQueueMessage } from "../../lib/blocks";
+import { dequeuedMessage, dontUseItHere, generateReviewQueueMessage, permissionDenied } from "../../lib/blocks";
 import { extractPermalink, sendDM } from "../../lib/utils";
+import { checkIfAllowlisted } from "../../lib/channel-allowlist";
+import { checkIfUserBanned } from "../../lib/admin";
 
 export const handleMsgAction = async ({
   client, ack, shortcut, respond
 }: AllMiddlewareArgs & SlackShortcutMiddlewareArgs<MessageShortcut>) => {
   const { trigger_id, type, user, action_ts, callback_id, message_ts, channel } = shortcut
-  const isChannelAllowlisted = allowlistedChannels.includes(shortcut.message_ts)
+  const isChannelAllowlisted = await checkIfAllowlisted(channel.id)
+  const isUserBanned = await checkIfUserBanned(user.id)
 
   logOps.info(`shortcuts:${callback_id}`, `received data:`, JSON.stringify({
     type,
@@ -33,6 +36,20 @@ export const handleMsgAction = async ({
         type: "modal",
         title: new PlainText("Hold up!").render(),
         blocks: dontUseItHere
+      }
+    })
+    return;
+  }
+
+  // check if the user is banned
+  if (isUserBanned === true) {
+    await client.views.open({
+      trigger_id,
+      view: {
+        callback_id,
+        type: "modal",
+        title: new PlainText("Permission Denied").render(),
+        blocks: permissionDenied
       }
     })
     return;
