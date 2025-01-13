@@ -136,3 +136,8 @@ dist
 
 # pre-commit
 .pre-commit-config.yaml
+
+# vitepress
+docs/.vitepress/dist
+docs/.vitepress/cache
+public/

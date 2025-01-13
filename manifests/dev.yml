@@ -23,12 +23,16 @@ oauth_config:
     bot:
       - app_mentions:read
       - reactions:read
+      - channels:read
       - channels:history
       - chat:write
       - im:write
       - commands
       - emoji:read
       - channels:join
+      - groups:read
+      - mpim:read
+      - im:read
 settings:
   event_subscriptions:
     bot_events:

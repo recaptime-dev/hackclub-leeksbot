@@ -14,7 +14,10 @@
     "studio:dev": "BROWSER=none dotenvx run -f .env -- prisma studio --browser none",
     "studio:prod": "BROWSER=none dotenvx run -f .env.production -- prisma studio -- browser none",
     "dotenvx:prod": "dotenvx run -f .env.production --",
-    "dotenvx:dev": "dotenvx run -f .env --"
+    "dotenvx:dev": "dotenvx run -f .env --",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "author": {
     "name": "Andrei Jiroh Halili",
@@ -39,7 +42,8 @@
     "@sentry/profiling-node": "^8.47.0",
     "@slack/bolt": "^4.0.0",
     "@slack/logger": "^4.0.0",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.2",
+    "vitepress": "^1.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.3",

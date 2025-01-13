@@ -22,16 +22,24 @@ oauth_config:
     bot:
       - app_mentions:read
       - reactions:read
+      - channel:read
       - channels:history
       - chat:write
       - im:write
       - commands
       - emoji:read
+      - channels:join
+      - channels:read
+      - groups:read
+      - mpim:read
+      - im:read
 settings:
   event_subscriptions:
     bot_events:
       - reaction_added
       - reaction_removed
+      - channel_created
+      - channel_unarchive
   interactivity:
     is_enabled: true
   org_deploy_enabled: false
