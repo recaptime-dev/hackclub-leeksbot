@@ -1,6 +1,6 @@
 import { prisma, slackApp } from "../app";
 import { queueChannel } from "./constants";
-import { sendDM } from "./utils";
+import { isBotInChannel, sendDM } from "./utils";
 
 export async function checkIfAllowlisted(channelId: string) {
   const channel = await prisma.slackChannels.findFirst({
@@ -35,8 +35,9 @@ export async function addChannelToAllowlist(channelId: string, admin: string) {
       id: channelId
     }
   })
+  const areWeHere = await isBotInChannel(channelId)
   
-  if (data === null || data.allowlisted === false) {
+  if (data === null || data.allowlisted === false || areWeHere === false) {
     await prisma.slackChannels.upsert({
       where: {
         id: channelId
@@ -50,9 +51,15 @@ export async function addChannelToAllowlist(channelId: string, admin: string) {
       }
     })
 
+    if (areWeHere === false) {
+      await slackApp.client.conversations.join({
+        channel: channelId
+      })
+    }
+
     await slackApp.client.chat.postMessage({
       channel: queueChannel,
-      text: `Channel <#${channelId}> has been allowlisted by <@${admin}>`
+      text: `Channel <#${channelId}> has been allowlisted by <@${admin}> (or is already allowlisted but we're here now)`
     })
   } else if (data.allowlisted === true) {
     await sendDM(admin, `Channel <#${channelId}> is already allowlisted.`)
@@ -76,8 +83,9 @@ export async function removeChannelFromAllowlist(channelId: string, admin: strin
       id: channelId
     }
   })
+  const areWeHere = await isBotInChannel(channelId)
 
-  if (data.allowlisted === true) {
+  if (data.allowlisted === true || areWeHere === true) {
     await prisma.slackChannels.update({
       where: {
         id: channelId
@@ -87,9 +95,15 @@ export async function removeChannelFromAllowlist(channelId: string, admin: strin
       }
     })
 
+    if (areWeHere === true) {
+      await slackApp.client.conversations.leave({
+        channel: channelId
+      })
+    }
+
     await slackApp.client.chat.postMessage({
       channel: queueChannel,
-      text: `Channel <#${channelId}> has been removed from allowlist by <@${admin}>`
+      text: `Channel <#${channelId}> has been removed from allowlist by <@${admin}> (or is already blocklisted and the bot left).`
     })
   } else if (data.allowlisted === false) {
     await sendDM(admin, `Channel <#${channelId}> is already blocklisted.`)

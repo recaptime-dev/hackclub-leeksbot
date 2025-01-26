@@ -58,4 +58,18 @@ export const leeksChannel = "C06089401GT";
  */
 export const testingCenter = "C07F3GDQMJS"
 
+/**
+ * The queue channel for Leeks bot to send notifications about flags and
+ * other important messages.
+ */
 export const queueChannel = "C07RS0CEQPP";
+
+/**
+ * The channel ID of the #leeksbot-meta channel.
+ */
+export const metaChannel = "C07T2EP4PLZ";
+
+/**
+ * The Slack user group ID for the quque team.
+ */
+export const queueTeam = "S07SN8KQZFC";

@@ -11,8 +11,8 @@ export const helpCommand = [
   new TextSection(new MarkdownText(`\`${getBaseSlashCommand()} status <message_id>\` - get status of a message on the review queue`)).render(),
   new TextSection(new MarkdownText(`\`${getBaseSlashCommand()} queue <message_id>\` - queue a message for review`)).render(),
   new TextSection(new MarkdownText(`\`${getBaseSlashCommand()} nuke-from-leeks <message_id>\` - remove an approved leek from the channel`)).render(),
-  new TextSection(new MarkdownText(`\`${getBaseSlashCommand()} allowlist-channel\` - remove an approved leek from the channel`)).render(),
-  new TextSection(new MarkdownText(`\`${getBaseSlashCommand()} blocklist-channel\` - remove an approved leek from the channel`)).render(),
+  new TextSection(new MarkdownText(`\`${getBaseSlashCommand()} allowlist-channel\` - add current channel to the allowlist`)).render(),
+  new TextSection(new MarkdownText(`\`${getBaseSlashCommand()} blocklist-channel\` - remove current channel from the allowlist`)).render(),
   new DividerSection().render(),
   new TextSection(new MarkdownText("If you found any bugs, please report it in #leeksbot-meta channel or via the <https://github.com/andreijiroh-dev/leeksbot/issues|issue tracker>")).render()
 ]

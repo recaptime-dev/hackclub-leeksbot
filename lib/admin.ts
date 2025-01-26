@@ -1,16 +1,23 @@
-import { prisma, slackApp } from "../app";
+import { logOps, prisma, slackApp } from "../app";
 import { Blocks, HeaderSection, MarkdownText, PlainText, TextSection } from "./block-builder";
-import { queueChannel } from "./constants";
+import { metaChannel, queueChannel } from "./constants";
 import { sendDM } from "./utils";
 
-export async function checkIfAdmin(userId: string) {
+export async function checkIfAdmin(userId: string): Promise<boolean> {
   const user = await prisma.slackUsers.findFirst({
     where: {
       id: userId
     }
   })
 
-  return user.bot_admin || false
+  // log DB result for debugging in production
+  logOps.info("checkIfAdmin", `Checking if ${userId} is an admin: ${user?.bot_admin || false}`)
+
+  if (user !== null) {
+    return user.bot_admin || false
+  } else {
+    return false
+  }
 }
 
 export async function addAdmin(userId: string) {
@@ -59,6 +66,15 @@ export async function checkIfUserBanned(userId: string) {
 export async function banUser(userId: string, admin: string, reason?: string) {
   const status = (await prisma.slackUsers.findFirst({ where: { id: userId } })).is_banned
 
+  // Make sure to check if that user ID exists on Slack first
+  const user = await slackApp.client.users.info({
+    user: userId
+  })
+  if (user.ok === false) {
+    await sendDM(admin, `User <@${userId}> does not exist on Slack. Please check the user ID and try again.`)
+    return;
+  }
+
   // prepare db data for updating an entry
   const data = {
     is_banned: true,
@@ -82,7 +98,7 @@ export async function banUser(userId: string, admin: string, reason?: string) {
         blocks: new Blocks([
           new HeaderSection(new PlainText("You have been banned from using Leeksbot"), "warning"),
           new TextSection(new MarkdownText(`You have been banned by <@${admin}> for the following reason: ${reason}`)),
-          new TextSection(new MarkdownText("If you believe this is a mistake, please contact the admins via DMs or at the #leeksbot-meta channel.")),
+          new TextSection(new MarkdownText(`If you believe this is a mistake, please contact the admins via DMs or at the <#${metaChannel}> channel.`)),
         ]).render()
       }
     )
@@ -102,6 +118,15 @@ export async function banUser(userId: string, admin: string, reason?: string) {
 
 export async function unbanUser(userId: string, admin: string) {
   const status = (await prisma.slackUsers.findFirst({ where: { id: userId } })).is_banned
+
+  // Make sure to check if that user ID exists on Slack first
+  const user = await slackApp.client.users.info({
+    user: userId
+  })
+  if (user.ok === false) {
+    await sendDM(admin, `User <@${userId}> does not exist on Slack. Please check the user ID and try again.`)
+    return;
+  }
 
   if (status === true) {
     const result = await prisma.slackUsers.update({

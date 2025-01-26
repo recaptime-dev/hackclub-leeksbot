@@ -48,3 +48,17 @@ export async function sendDM(user: string, data: string | object) {
     throw Error(error)
   }
 }
+
+export async function getBotUserId() {
+  const {user_id} = await slackApp.client.auth.test()
+  return user_id
+}
+
+export async function isBotInChannel(channelId: string) {
+  const botUserId = await getBotUserId()
+  const {members} = await slackApp.client.conversations.members({
+    channel: channelId
+  })
+
+  return members.includes(botUserId)
+}
