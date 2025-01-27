@@ -28,6 +28,7 @@ model SlackLeeks {
   first_flagged_by String
   status           String  @default("pending")
   review_queue_id  String?
+  is_major_leek    Boolean @default(false) // from one of ship feedback on HS
 
   // stats
   leeksReact     Int @default(0)
