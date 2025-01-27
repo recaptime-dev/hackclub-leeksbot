@@ -18,11 +18,18 @@ for the runtime and documentation site (via `npm`) and Postgres for data presist
 ### With Nix
 
 ::: warning
-Currently Prisma Client seems to be broken inside our Nix setup and is
-researching workarounds on that.
+You need to be inside a `devenv` shell for Prisma Client to work properly on NixOS.
 :::
 
 We use [`devenv`](https://devenv.sh) via Nix flakes using the `direnv` integration.
 If you do use VS Code, [install its integration](https://marketplace.visualstudio.com/items?itemName=mkhl.direnv) after installing
 `direnv` via your NixOS/home-manager configuration or `nix-env -iA nixpkgs.direnv` /
-`nix profile install nixpkgs#direnv` (if you have `flakes` experimental feature).
+`nix profile install nixpkgs#direnv` (if you have `flakes` experimental feature enabled).
+
+You may be prompted to run `direnv allow` once in order to initialize the dev environment.
+
+### Secrets
+
+Secrets are managed via [`dotenvx`](https://github.com/otenvx/dotenvx), with [Doppler](https://doppler.com)
+for safely storing the private keys. If you want to run the dev instance yourself,
+ask @ajhalili2006 for the value of `DOTENV_PRIVATE_KEY` in Hack Club Slack (or via email at `ajhalili2006@crew.recaptime.dev`).

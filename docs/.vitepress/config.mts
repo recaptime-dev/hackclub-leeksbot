@@ -16,6 +16,7 @@ export default defineConfig({
         text: 'User Guide',
         items: [
           { text: 'Getting Started', link: '/user-guide/getting-started' },
+          { text: "Slash commands", link: '/user-guide/slash-commands' }
         ]
       },
       {

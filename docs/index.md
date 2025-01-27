@@ -20,6 +20,7 @@ features:
   - title: Get notified as it goes through the review queue
     details: "Or checking its status via <code>/leeks status [message_id]</code> slash command"
   - title: "Proudly hosted on <a href='https://hackclub.app'>Hack Club Nest</a>"
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    details: With reproducible environments powered by <a href="https://devenv.sh">devenv</a> and Nix.
 ---
 
+We're still cooking up the documentation at the moment, but at least this is up before the end of [High Seas](https://highseas.hackclub.com).
