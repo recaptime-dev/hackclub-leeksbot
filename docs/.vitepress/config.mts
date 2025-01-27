@@ -65,8 +65,6 @@ export default defineConfig({
 
   // set base URL and make sure URLs are clean
   cleanUrls: true,
-  base: process.env.NODE_ENV === 'production' ? 'https://leeksbot.hackclub.lorebooks.wiki' : '/',
-
   sitemap: {
     hostname: 'https://leeksbot.hackclub.lorebooks.wiki',
   },
