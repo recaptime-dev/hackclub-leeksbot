@@ -16,22 +16,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: git pull stuff
-        run: echo todo
-  docs-site:
-    name: Documentation Site
-    runs-on: ubuntu-24.04
-    environment: 
-      name: docs/production
-      url: https://leeksbot.hackclub.lorebooks.wiki
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - name: Get Doppler Secrets
+        id: doppler
+        uses: DopplerHQ/secrets-fetch-action@v1.3.0
         with:
-          node-version: '22'
-      - name: Install Dependencies
-        run: npm install
-      - name: Build
-        run: npm run docs:build
+          doppler-token: ${{secrets.DOPPLER_TOKEN}}       
+      - name: Install SSH key of bastion
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{steps.doppler.outputs.NEST_SSH_PRIVATE_KEY}}
+          name: ajhalili2006-passwordless
+          config: |
+            Host nest
+              Hostname hackclub.app
+              User ajhalili2006
+              IdentityFile ~/.ssh/ajhalili2006-passwordless
+      - name: Update code on nest
+        run: |
+          ssh nest git -C /home/ajhalili2006/git/leeksbot pull
+          ssh nest bash -c "cd /home/ajhalili2006/git/leeksbot && npm i && npx prisma generate"
+          ssh nest bash -c "cp -v /home/ajhalili2006/git/leeksbot/lib/leeksbot-nest.service /home/ajhalili2006/.config/systemd/user && systemctl --user daemon-reload"
+          ssh nest systemctl restart leeksbot-nest
