@@ -2,3 +2,8 @@
 inputs:
   nixpkgs:
     url: github:nixos/nixpkgs/nixpkgs-unstable
+  prisma-utils:
+    url: github:VanCoding/nix-prisma-utils
+    inputs:
+      pkgs:
+        follows: nixpkgs
