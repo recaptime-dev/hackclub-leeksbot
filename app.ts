@@ -27,6 +27,19 @@ export const slackApp = new App({
           "content-length": Buffer.byteLength(redirect),
           location: "https://mau.dev/andreijiroh-dev/leeksbot"
         }).end(redirect)
+      }
+    },
+    {
+      path: "/ping",
+      method: ["GET"],
+      handler(req, res) {
+        const message = "leeksbot is running here now"
+        res.statusCode = 200
+        res.statusMessage = message
+        res.setHeaders(new Headers({
+          "Content-Type": "text/plain",
+          "content-length": Buffer.byteLength(message).toString()
+        }))
       },
     }
   ]
@@ -35,18 +48,22 @@ export const slackApp = new App({
 registerHandlers(slackApp);
 
 (async () => {
-  logOps.setLevel(env.LOGOPS_DEBUG !== undefined ? LogLevel.DEBUG : LogLevel.INFO)
-  logOps.setName("leeksbot")
-
+  logOps.setLevel(env.LOGOPS_DEBUG !== undefined ? LogLevel.DEBUG : LogLevel.INFO);
+  logOps.setName("leeksbot");
+  
   try {
+    // connect to db first before bolt.js
+    await prisma.$connect();
+
+    // then do the rest
     await slackApp.start(config.port);
-    await prisma.$connect()
     logOps.info("slackAppBase", `⚡️ Bolt app now up and running`);
     if (config.slack.socketMode !== true) logOps.info("API server now reachable at port", config.port)
-
-    await sendDM(botAdmins[0], process.env.NODE_ENV == "production" ? "Leeks bot is now online!" : "Leeks bot is now online! (development, apologies for spamming if this annoys you)")
+    
+    // notify @ajhalili2006 when the bot is up
+    await sendDM(botAdmins[0], process.env.NODE_ENV == "production" ? "Leeks bot is now online in nest!" : "Leeks bot is now online! (development, apologies for spamming if this annoys you)")
   } catch (error) {
-    console.error('Unable to start App', error);
+    console.error('Something went wrong during startup - ', error);
     await slackApp.stop()
     await prisma.$disconnect()
   }

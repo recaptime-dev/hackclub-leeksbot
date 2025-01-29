@@ -54,34 +54,36 @@ export const botCommandHandler = async ({
     "blocklist"
   ]
 
-  switch (true) {
-    case params[0] == "ping":
+  switch (params[0]) {
+    case "ping":
       logOps.info("slash-commands:ping", `Received ping command from ${user_id} in ${channel_id} (${channel_name})`)
       await pingOps({ack, respond, payload, say, client, context, logger, next, command: payload, body: payload});
       return;
-    case params[0] == "help":
+    case "help":
       logOps.info("slash-commands:help", `Received help command from ${user_id} in ${channel_id} (${channel_name})`)
       await helpOps({ack, respond, payload, say, client, context, logger, next, command: payload, body: payload});
       return;
-    case params[0] == "status":
+    case "status":
       logOps.info("slash-commands:status", `Received status command from ${user_id} in ${channel_id} (${channel_name})`)
       await statusOps({ack, respond, payload, say, client, context, logger, next, command: payload, body: payload});
       return;
-    case params[0] == "queue":
+    case "queue":
       logOps.info("slash-commands:queue", `Received queue command from ${user_id} in ${channel_id} (${channel_name})`)
       return;
-    case addChannelAliases.includes(params[0]):
-      logOps.info("slash-commands:add-channel", `Received add-channel command from ${user_id} in ${channel_id} (${channel_name})`)
-      await addChannelForLeeks({ack, respond, payload, say, client, context, logger, next, command: payload, body: payload});
-      return;
-    case rmChannelAliases.includes(params[0]):
-      logOps.info("slash-commands:remove-channel", `Received remove-channel command from ${user_id} in ${channel_id} (${channel_name})`)
-      await rmChannelForLeeks({ack, respond, payload, say, client, context, logger, next, command: payload, body: payload});
-      return;
     default:
+      if (addChannelAliases.includes(params[0])) {
+        logOps.info("slash-commands:add-channel", `Received add-channel command from ${user_id} in ${channel_id} (${channel_name})`)
+        await addChannelForLeeks({ack, respond, payload, say, client, context, logger, next, command: payload, body: payload});
+        return;
+      }
+      if (rmChannelAliases.includes(params[0])) {
+        logOps.info("slash-commands:remove-channel", `Received remove-channel command from ${user_id} in ${channel_id} (${channel_name})`)
+        await rmChannelForLeeks({ack, respond, payload, say, client, context, logger, next, command: payload, body: payload});
+        return;
+      }
       await respond({
         text: `I didn't understand that command or probably unimplemented yet. Try \`${getBaseSlashCommand()} help\`.`
       }); 
-      return
-  }
+      return;
+    }
 }

@@ -4,6 +4,7 @@ import { addToQueueHandler, approveLeekFlag, denyLeekFlag, ignore_leek, undoAppr
 export const blockActionsRegistry = (app: App) => {
   // buttons
   app.action("approve_leek", approveLeekFlag);
+  app.action("approve_leek_major", approveLeekFlag)
   app.action("deny_leek", denyLeekFlag);
   app.action("queue_for_review", addToQueueHandler);
   app.action("delete", undoApproveLeek)

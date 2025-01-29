@@ -21,6 +21,7 @@ export type SlackLeekTypes = {
   review_queue_id?: string
   leeksReact: number
   leeksFlagCount: number
+  is_major_leek: boolean
   readonly created_at: Date
   readonly updated_at: Date
 }

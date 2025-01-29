@@ -6,7 +6,7 @@ import { slackApp } from "../app";
  * Gemini Code Assist in Google Cloud Platform).
  * 
  * Note that since this could break things at the database side if we received
- * a leek through a message inside the thread.
+ * a leek through a message inside the thread, but we'll fix that later.
  * 
  * @param permalinkUrl The full message permalink from Slack
  * @returns 
@@ -24,7 +24,7 @@ export function extractPermalink(permalinkUrl) {
  * A utility function to easily sending a DM to someone without needing to doing
  * `client.conversations.open` first (it'll do that for you behind the scenes).
  * @param user Slack user ID
- * @param data Either a string or a object following `client.chat.postMessage` parameters
+ * @param data Either a string or a object following `client.chat.postMessage` parameters in Bolt.js
  * @returns 
  */
 export async function sendDM(user: string, data: string | object) {
@@ -49,11 +49,21 @@ export async function sendDM(user: string, data: string | object) {
   }
 }
 
+/**
+ * Utility function to get the Slack app's bot user ID, mainly used to check if the bot
+ * in question is in a specific channel via {@linkcode isBotInChannel}.
+ * @returns 
+ */
 export async function getBotUserId() {
   const {user_id} = await slackApp.client.auth.test()
   return user_id
 }
 
+/**
+ * Check if the bot is in a specified Slack channel by its ID.
+ * @param channelId Slack channel ID
+ * @returns Returns true if the bot is there, returns false otherwise.
+ */
 export async function isBotInChannel(channelId: string) {
   const botUserId = await getBotUserId()
   const {members} = await slackApp.client.conversations.members({

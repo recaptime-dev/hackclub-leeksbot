@@ -50,6 +50,11 @@ export const generateReviewQueueMessage = async (
         "approve_leek"
       ),
       new ButtonAction(
+        new PlainText("Flag as major leek", true),
+        msg_id,
+        "approve_leek_major"
+      ),
+      new ButtonAction(
         new PlainText(":x: Deny", true),
         msg_id,
         "deny_leek"

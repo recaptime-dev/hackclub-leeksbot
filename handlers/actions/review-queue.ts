@@ -61,7 +61,7 @@ export const approveLeekFlag = async ({ ack, client, body }:
   logOps.info(`review-queue:${entry.message_id}`, `posting to channel ${detectEnvForChannel()}, approved by ${botAdminId}`)
   const posted = await client.chat.postMessage({
     channel: detectEnvForChannel(),
-    text: `:eyes: :leek: *Leek ahead*: ${permalink}`,
+    text: `${actions[0].action_id === "approve_leek_major" ? ":eyes: :leek: :warning: *MAJOR LEEK AHEAD*" : ":eyes: :leek: *Leek ahead*"}: ${permalink}`,
     mrkdwn: true
   })
 
@@ -71,14 +71,17 @@ export const approveLeekFlag = async ({ ack, client, body }:
     },
     data: {
       leeks_channel_post_id: posted.ts,
-      status: SlackLeeksStatus.Approved as SlackLeeksStatus
+      status: SlackLeeksStatus.Approved as SlackLeeksStatus,
+      is_major_leek: actions[0].action_id === "approve_leek_major" ? true : false
     }
   }) as SlackLeekTypes
+
+  const approvalMessage = `:white_check_mark: Approved by <@${botAdminId}> as ${actions[0].action_id === "approve_leek_major" ? "major" : "minor"} leek`
 
   await client.chat.postMessage({
     channel: queueChannel,
     thread_ts: entry.review_queue_id,
-    text: `:white_check_mark: Approved by <@${botAdminId}>`,
+    text: approvalMessage,
     //username: "leeksbot audit logs"
   })
 
@@ -95,7 +98,7 @@ export const approveLeekFlag = async ({ ack, client, body }:
       message.blocks[1],
       message.blocks[2],
       message.blocks[3],
-      new TextSection(new MarkdownText(`:white_check_mark: Approved by <@${botAdminId}>`)).render(),
+      new TextSection(new MarkdownText(approvalMessage)).render(),
       new ActionsSection([
         new ButtonAction(
           new PlainText(":leftwards_arrow_with_hook: Undo approval and delete", true),
@@ -114,7 +117,7 @@ export const denyLeekFlag = async ({ ack, client, body }:
   logOps.debug(`review-queue`, `received event data:`, JSON.stringify(body))
   const { user, actions, channel, message } = body
   const { id: botAdminId } = user
-  const { value, action_id } = actions[0]
+  const { value } = actions[0]
 
   // ack it first before doing any other processing
   await ack()
@@ -196,7 +199,7 @@ export const addToQueueHandler = async ({
   // ack it first before doing any other processing
   await ack()
 
-  if (!botAdmins.includes(botAdminId)) {
+  if (await checkIfAdmin(botAdminId) === false) {
     await client.chat.postEphemeral({
       channel: channel.id,
       user: botAdminId,

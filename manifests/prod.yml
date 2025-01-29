@@ -29,7 +29,6 @@ oauth_config:
       - commands
       - emoji:read
       - channels:join
-      - channels:read
       - groups:read
       - mpim:read
       - im:read

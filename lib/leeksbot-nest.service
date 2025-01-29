@@ -1,10 +1,13 @@
 [Unit]
-Description=leeksbot slack app
+Description=leeksbot slack app - prod
+Documentation=https://leeksbot.hackclub.lorebooks.wiki
+StartLimitBurst=5
+StartLimitIntervalSec=120s
 
 [Service]
 ExecStart=/home/ajhalili2006/.nix-profile/bin/npm start
 WorkingDirectory=/home/ajhalili2006/git/leeksbot
-RestartSec=5s
+RestartSec=15s
 Restart=on-failure
 
 [Install]
