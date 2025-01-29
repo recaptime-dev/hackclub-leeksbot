@@ -1,18 +1,22 @@
 # `@hackclub-community/leeksbot` - Hack Club Leeks Slack app
 
-> [!IMPORTANT]
-> **Note on upcoming GitHub repo ownership changes in the future**: This project will be moved into [the @recaptime-dev GitHub organization] as an official [Recap Time Squad]
-> project for the Hack Club Slack community, upgrading from @ajhalili2006's
-> side/pet project. [See the upcoming project adoption policy] for details.
-
 [![Hack Club](https://badges.api.lorebooks.wiki/badges/hackclub/hackclub?style=flat-square)](https://hackclub.com/slack)
 
 A Slack app for flagging leeks around the Hack Club Slack, with a review queue
-to prevent abuse and false postives. Proudly hosted on [Nest](https://hackclub.app).
+to prevent abuse and false postives (you can still forward if it is your thing).
+Proudly hosted on [Nest](https://hackclub.app). A @recaptime-dev project for the Hack Club
+community, started as @ajhalili2006's pet project.
 
-**CALLING FOR CONTRIBUTIONS AND MAINTAINERS**: This project is currently a one-man operation and needs your help to keep it maintained. Learn more in the project's
-[contributing guidelines] If you can't support the project by contributing patches and bug reports,
-consider [donating to Recap Time Squad] or [help Hack Club Nest admins pay the biils](https://hcb.hackclub.com/donations/start/nest)[^1].
+**Links**: [Documentation][docs] | [meta Slack channel][meta] | [leeks channel][leeks]
+
+[docs]: https://leeksbot.hackclub.lorebooks.wiki
+[meta]: https://hackclub.slack.com
+[leeks]: https://hackclub.slack.com
+
+**CALLING FOR CONTRIBUTIONS AND MAINTAINERS**: This project is currently a one-man operation in
+terms of code maintenance and needs your help to keep it maintained. Learn more in the project's
+[contributing guidelines] If you can't support the project by contributing patches and bug
+reports, consider [donating to Recap Time Squad] or [help Hack Club Nest admins pay the biils](https://hcb.hackclub.com/donations/start/nest)[^1].
 
 ## Context for non-Hack Clubbers
 
