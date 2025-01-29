@@ -8,7 +8,7 @@ type BotEnvConfig = {
   // Postgres URL string
   db?: string,
 
-  port: string,
+  port: number,
 
   slack: {
     botToken?: string,
@@ -25,7 +25,7 @@ type BotEnvConfig = {
 export const config: BotEnvConfig = {
   env: env.NODE_ENV || "development",
   db: env.DATABASE_URL,
-  port: env.PORT || "6023",
+  port: Number(env.PORT) || 6023,
   slack: {
     botToken: env.SLACK_BOT_TOKEN,
     appToken: env.SLACK_APP_TOKEN,

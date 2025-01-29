@@ -56,7 +56,9 @@ registerHandlers(slackApp);
     await prisma.$connect();
 
     // then do the rest
-    await slackApp.start(config.port);
+    await slackApp.start({
+      port: config.port
+    });
     logOps.info("slackAppBase", `⚡️ Bolt app now up and running`);
     if (config.slack.socketMode !== true) logOps.info("API server now reachable at port", config.port)
     
