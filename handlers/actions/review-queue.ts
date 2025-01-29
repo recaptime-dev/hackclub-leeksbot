@@ -19,97 +19,102 @@ import {
 import { sendDM } from '../../lib/utils';
 import { checkIfAdmin } from '../../lib/admin';
 import { SlackLeeksStatus, SlackLeekTypes } from '../../lib/types';
+import Sentry from '../../lib/sentry';
 
 export const approveLeekFlag = async ({ ack, client, body }:
   AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
-  logOps.debug(`review-queue`, `received event data:`, JSON.stringify(body))
-  const { user, actions, channel, message } = body
-  const { id: botAdminId } = user
-  const { value } = actions[0]
-
-  // ack it first before doing any other processing
-  await ack()
-
-  // check if the user is a bot admin
-  if (await checkIfAdmin(botAdminId) == false) {
-    await client.chat.postEphemeral({
-      channel: channel.id,
-      user: botAdminId,
-      blocks: permissionDenied
+  try {
+    logOps.debug(`review-queue`, `received event data:`, JSON.stringify(body))
+    const { user, actions, channel, message } = body
+    const { id: botAdminId } = user
+    const { value } = actions[0]
+  
+    // ack it first before doing any other processing
+    await ack()
+  
+    // check if the user is a bot admin
+    if (await checkIfAdmin(botAdminId) == false) {
+      await client.chat.postEphemeral({
+        channel: channel.id,
+        user: botAdminId,
+        blocks: permissionDenied
+      })
+  
+      return;
+    }
+  
+    let entry = await prisma.slackLeeks.findFirst({
+      where: {
+        message_id: value
+      }
+    }) as SlackLeekTypes
+  
+    // get permalink of original message
+    const { permalink } = await client.chat.getPermalink({
+      channel: entry.channel_id,
+      message_ts: entry.message_id
     })
-
-    return;
+  
+    // get conversation ID for a user on DMs
+    const { channel: imChannelData } = await client.conversations.open({
+      users: entry.first_flagged_by
+    })
+  
+    logOps.info(`review-queue:${entry.message_id}`, `posting to channel ${detectEnvForChannel()}, approved by ${botAdminId}`)
+    const posted = await client.chat.postMessage({
+      channel: detectEnvForChannel(),
+      text: `${actions[0].action_id === "approve_leek_major" ? ":eyes: :leek: :warning: *MAJOR LEEK AHEAD*" : ":eyes: :leek: *Leek ahead*"}: ${permalink}`,
+      mrkdwn: true
+    })
+  
+    entry = await prisma.slackLeeks.update({
+      where: {
+        message_id: entry.message_id
+      },
+      data: {
+        leeks_channel_post_id: posted.ts,
+        status: SlackLeeksStatus.Approved as SlackLeeksStatus,
+        is_major_leek: actions[0].action_id === "approve_leek_major" ? true : false
+      }
+    }) as SlackLeekTypes
+  
+    const approvalMessage = `:white_check_mark: Approved by <@${botAdminId}> as ${actions[0].action_id === "approve_leek_major" ? "major" : "minor"} leek`
+  
+    await client.chat.postMessage({
+      channel: queueChannel,
+      thread_ts: entry.review_queue_id,
+      text: approvalMessage,
+      //username: "leeksbot audit logs"
+    })
+  
+    await client.chat.postMessage({
+      channel: imChannelData.id,
+      text: `Hey <@${entry.first_flagged_by}>! Thanks for finding that real leek and is now approved by <@${botAdminId}>, check it now at <#${detectEnvForChannel()}>.`
+    })
+  
+    await client.chat.update({
+      channel: queueChannel,
+      ts: entry.review_queue_id,
+      blocks: [
+        message.blocks[0],
+        message.blocks[1],
+        message.blocks[2],
+        message.blocks[3],
+        new TextSection(new MarkdownText(approvalMessage)).render(),
+        new ActionsSection([
+          new ButtonAction(
+            new PlainText(":leftwards_arrow_with_hook: Undo approval and delete", true),
+            entry.message_id,
+            "delete")
+        ]).render(),
+        new ContextSection([
+          new MarkdownText(`Original message ID on database: \`${entry.message_id}\``)
+        ]).render()
+      ]
+    })
+  } catch (error) {
+    Sentry.captureException(error)
   }
-
-  let entry = await prisma.slackLeeks.findFirst({
-    where: {
-      message_id: value
-    }
-  }) as SlackLeekTypes
-
-  // get permalink of original message
-  const { permalink } = await client.chat.getPermalink({
-    channel: entry.channel_id,
-    message_ts: entry.message_id
-  })
-
-  // get conversation ID for a user on DMs
-  const { channel: imChannelData } = await client.conversations.open({
-    users: entry.first_flagged_by
-  })
-
-  logOps.info(`review-queue:${entry.message_id}`, `posting to channel ${detectEnvForChannel()}, approved by ${botAdminId}`)
-  const posted = await client.chat.postMessage({
-    channel: detectEnvForChannel(),
-    text: `${actions[0].action_id === "approve_leek_major" ? ":eyes: :leek: :warning: *MAJOR LEEK AHEAD*" : ":eyes: :leek: *Leek ahead*"}: ${permalink}`,
-    mrkdwn: true
-  })
-
-  entry = await prisma.slackLeeks.update({
-    where: {
-      message_id: entry.message_id
-    },
-    data: {
-      leeks_channel_post_id: posted.ts,
-      status: SlackLeeksStatus.Approved as SlackLeeksStatus,
-      is_major_leek: actions[0].action_id === "approve_leek_major" ? true : false
-    }
-  }) as SlackLeekTypes
-
-  const approvalMessage = `:white_check_mark: Approved by <@${botAdminId}> as ${actions[0].action_id === "approve_leek_major" ? "major" : "minor"} leek`
-
-  await client.chat.postMessage({
-    channel: queueChannel,
-    thread_ts: entry.review_queue_id,
-    text: approvalMessage,
-    //username: "leeksbot audit logs"
-  })
-
-  await client.chat.postMessage({
-    channel: imChannelData.id,
-    text: `Hey <@${entry.first_flagged_by}>! Thanks for finding that real leek and is now approved by <@${botAdminId}>, check it now at <#${detectEnvForChannel()}>.`
-  })
-
-  await client.chat.update({
-    channel: queueChannel,
-    ts: entry.review_queue_id,
-    blocks: [
-      message.blocks[0],
-      message.blocks[1],
-      message.blocks[2],
-      message.blocks[3],
-      new TextSection(new MarkdownText(approvalMessage)).render(),
-      new ActionsSection([
-        new ButtonAction(
-          new PlainText(":leftwards_arrow_with_hook: Undo approval and delete", true),
-          entry.message_id,
-          "delete")
-      ]).render(),
-      new ContextSection([
-        new MarkdownText(`Original message ID on database: \`${entry.message_id}\``)
-      ]).render()
-    ]
-  })
 }
 
 export const denyLeekFlag = async ({ ack, client, body }:
