@@ -22,10 +22,10 @@ export const botCommandHandler = async ({
   logger,
   next
 }: AllMiddlewareArgs & SlackCommandMiddlewareArgs) => {
+  const {text, user_id, channel_id, channel_name} = payload;
+  const params = text.split(" ")
   try {
-    const {text, user_id, channel_id, channel_name} = payload;
     const isThisBotAdmin = await checkIfAdmin(user_id);
-    const params = text.split(" ")
   
     logOps.info(
       "received slash command data:",
@@ -63,8 +63,10 @@ export const botCommandHandler = async ({
         return;
       case "help":
         logOps.info("slash-commands:help", `Received help command from ${user_id} in ${channel_id} (${channel_name})`)
-        await helpOps({ack, respond, payload, say, client, context, logger, next, command: payload, body: payload});
-        return;
+        await respond({
+          blocks: helpCommand
+        })
+        return
       case "status":
         logOps.info("slash-commands:status", `Received status command from ${user_id} in ${channel_id} (${channel_name})`)
         await statusOps({ack, respond, payload, say, client, context, logger, next, command: payload, body: payload});

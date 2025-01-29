@@ -22,10 +22,10 @@ export const slackApp = new App({
       path: "/",
       method: ["GET"],
       handler(req, res) {
-        const redirect = "Redirecting to <a href='https://mau.dev/andreijiroh-dev/leeksbot'>https://mau.dev/andreijiroh-dev/leeksbot</a>"
+        const redirect = "Redirecting to <a href='https://leeksbot.hackclub.lorebooks.wiki'>docs</a>"
         res.writeHead(301, {
           "content-length": Buffer.byteLength(redirect),
-          location: "https://mau.dev/andreijiroh-dev/leeksbot"
+          location: "https://leeksbot.hackclub.lorebooks.wiki"
         }).end(redirect)
       }
     },
