@@ -25,7 +25,7 @@ type BotEnvConfig = {
 export const config: BotEnvConfig = {
   env: env.NODE_ENV || "development",
   db: env.DATABASE_URL,
-  port: env.PORT || "3000",
+  port: env.PORT || "6023",
   slack: {
     botToken: env.SLACK_BOT_TOKEN,
     appToken: env.SLACK_APP_TOKEN,
