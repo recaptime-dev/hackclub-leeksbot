@@ -23,6 +23,10 @@ export default defineConfig({
         text: "Reference",
         items: [
           {
+            text: "Allowlisted channels",
+            link: "/meta/allowlisted-channels"
+          },
+          {
             text: "Contributing to the project",
             link: "/meta/contributing"
           },
@@ -44,7 +48,10 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/recaptime-dev/hackclub-leeksbot' }
+      { icon: "hackclub", link: "https://hackclub.com/?ref=leeksbot" },
+      { icon: "slack", link: "https://hackclub.slack.com/archives/C07T2EP4PLZ" },
+      { icon: 'github', link: 'https://github.com/recaptime-dev/hackclub-leeksbot' },
+      { icon: "gitlab", link: "https://gitlab.com/recaptime-dev/hackclub-leeksbot" }
     ],
 
     footer: {

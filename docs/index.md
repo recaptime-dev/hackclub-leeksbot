@@ -6,6 +6,9 @@ hero:
   name: "Hack Club Leeks App"
   text: "The companion app for all the leeks"
   tagline: In the Hack Club Slack
+  image:
+    src: /assets/img/leeksbot-main-logo.png
+    alt: The leeksbot Slack app logo
   actions:
     - theme: brand
       text: Get started
