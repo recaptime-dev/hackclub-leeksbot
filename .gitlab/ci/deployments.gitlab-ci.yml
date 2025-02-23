@@ -1,0 +1,11 @@
+update-manifest:
+  stage: update-manifest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - manifests/*.yml
+        - .gitlab/ci/deployments.gitlab-ci.yml
+  script:
+    - |
+      npx dotenvx run -- sh -c 'curl -X POST -H "Authorization: Bearer $SLACK_APP_MANIFEST_DEPLOY_TOKEN" -H "Content-Type: application/json" --data @manifests/dev.yml https://slack.com/api/apps.manifest.update'
+      npx dotenvx run -f .env.production -- sh -c 'curl -X POST -H "Authorization: Bearer $SLACK_APP_MANIFEST_DEPLOY_TOKEN" -H "Content-Type: application/json" --data @manifests/dev.yml https://slack.com/api/apps.manifest.update'

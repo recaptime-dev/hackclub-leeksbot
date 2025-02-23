@@ -1,0 +1,29 @@
+image:
+  name: $CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX/node:22-alpine
+  entrypoint:
+    - /bin/sh
+  docker:
+    user: root
+
+variables:
+  OP_SERVICE_ACCOUNT_TOKEN: $OP_SERVICE_ACCOUNT_TOKEN
+  SSH_PRIVATE_KEY_PATH: $RECAPTIMEBOT_DEPLOY_KEY_OP
+
+before_script:
+  - |
+    echo https://downloads.1password.com/linux/alpinelinux/stable/ >> /etc/apk/repositories
+    wget https://downloads.1password.com/linux/keys/alpinelinux/support@1password.com-61ddfc31.rsa.pub -P /etc/apk/keys
+    apk update && apk add 1password-cli bash coreutils
+    mkdir /etc/secretskit
+    op read "${SSH_PRIVATE_KEY_PATH}?ssh-format=openssh" -o /etc/secretskit/rtdevbot.key
+    echo "Host *\n StrictHostKeyChecking no\n HostKey" > ~/.ssh/config
+  - npm ci && op inject -i .env.keys.tmpl -o .env.keys
+
+stages:
+  - lint
+  - test
+  - update-manifests
+  - deploy
+
+include:
+  - local: .gitlab/ci/*.yml
