@@ -6,6 +6,7 @@ update-manifest:
         - manifests/*.yml
         - .gitlab/ci/deployments.gitlab-ci.yml
         - .gitlab-ci.yml
+        - .env*
   script:
     - |
       echo working on it soon
@@ -26,6 +27,7 @@ deploy-prod:
         - manifests/*.yml
         - .gitlab/ci/deployments.gitlab-ci.yml
         - .gitlab-ci.yml
+        - .env*
       when: always
       needs: [update-manifest]
     - when: manual
