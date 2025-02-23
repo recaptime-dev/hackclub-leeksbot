@@ -43,8 +43,8 @@ export default defineConfig({
     ],
 
     editLink: {
-      pattern: 'https://github.com/recaptime-dev/hackclub-leeksbot/edit/main/docs/:path',
-      text: 'Edit this page on GitHub'
+      pattern: 'https://gitlab.com/-/ide/project/recaptime-dev/hackclub-leeksbot/edit/main/-/docs/:path',
+      text: 'Edit this page on GitLab SaaS (via Web IDE)'
     },
 
     socialLinks: [
