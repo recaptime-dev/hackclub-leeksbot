@@ -3,6 +3,16 @@
   "git.alwaysSignOff": true,
   "conventionalCommits.scopes": [
     "devenv.sh",
-    "deps"
-  ]
+    "deps",
+    "gitlab-ci",
+    "github-actions",
+    "docs",
+    "lib",
+    "handlers",
+    "manifests",
+    "slackApp",
+    "global"
+  ],
+  "conventionalCommits.autoCommit": false,
+  "conventionalCommits.showEditor": true
 }
