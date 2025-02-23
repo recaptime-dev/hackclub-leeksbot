@@ -10,7 +10,7 @@ export const pingOps = async ({
   client
 }: AllMiddlewareArgs & SlackCommandMiddlewareArgs) => {
   await respond({
-    text: "We're up!"
+    text: "We're actually up!"
   })
 }
 
@@ -73,7 +73,7 @@ export const statusOps = async ({
           new MarkdownText(`\`${entry.message_id}\``),
           new MarkdownText("*Permalink*"),
           new MarkdownText(permalink),
-          new MarkdownText("*First flagged by"),
+          new MarkdownText("*First flagged by*"),
           new MarkdownText(`<@${entry.first_flagged_by}>`),
           new MarkdownText("*Status*"),
           new PlainText(entry.status)

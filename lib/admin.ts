@@ -20,24 +20,31 @@ export async function checkIfAdmin(userId: string): Promise<boolean> {
   }
 }
 
-export async function addAdmin(userId: string) {
+export async function addAdmin(userId: string, actor: string) {
   const result = await prisma.slackUsers.upsert({
     where: {
       id: userId
     },
     create: {
       id: userId,
-      bot_admin: true
+      bot_admin: true,
+      promoted_by: actor
     },
     update: {
       bot_admin: true,
       is_banned: false,
       banned_at: null,
       banned_by: null,
+      promoted_by: actor
     }
   })
 
-  return result
+  await sendDM(userId, `You have been promoted as bot admin for leeksbot by <@{actor}>. You should be invited into <#${queueChannel}> and added to`)
+  await slackApp.client.conversations.invite({
+    users: userId,
+    channel: queueChannel,
+    force: true,
+  })
 }
 
 export async function removeAdmin(userId: string) {

@@ -2,7 +2,7 @@ import type {
   AllMiddlewareArgs,
   SlackEventMiddlewareArgs
 } from "@slack/bolt"
-import { allowlistedChannels, leeksReactionEmojis, queueChannel } from "../../lib/constants";
+import { leeksReactionEmojis, metaChannel, queueChannel, queueTeam } from "../../lib/constants";
 import { detectEnvForChannel, getBaseSlashCommand } from "../../lib/env";
 import { logOps, prisma, slackApp } from "../../app";
 import { dequeuedMessage, generateReviewQueueMessage } from "../../lib/blocks";
@@ -43,7 +43,7 @@ export const leeksReactionCb = async ({
       data: {
         message_id: item.ts,
         channel_id: item.channel,
-        leeksReact: 1,
+        leeks_reacts: 1,
         first_flagged_by: user,
         status: isChannelAllowlisted === true ? "pending" : "dequeued",
         permalink_message_id: extractPermalink(permalink)
@@ -55,7 +55,7 @@ export const leeksReactionCb = async ({
         message_id: item.ts
       },
       data: {
-        leeksReact: entry.leeksReact + 1
+        leeks_reacts: entry.leeks_reacts + 1
       }
     })
   }
@@ -83,7 +83,7 @@ export const leeksReactionCb = async ({
 
     await sendDM(
       user,
-      `Hey there, we have received your leek flag (message ID: ${item.ts}) for review by an admin. Expect another message here for any updates.`
+      `Hey there, we have received your leek flag (message ID: \`${item.ts}\`) for review by an admin. Expect another message here for any updates.`
     )
   } else if (entry.status == "dequeued") {
     if (!entry.review_queue_id || entry.review_queue_id == "deleted") {
@@ -103,11 +103,11 @@ export const leeksReactionCb = async ({
     }
     await sendDM(
       user,
-      `You reacted to a message (ID: \`${entry.message_id}\`) in this channel but it is none of our <https://mau.dev/andreijiroh-dev/leeksbot/-/blob/main/lib/constants.ts?ref_type=heads#L22|allowlisted channels>. We still logged it on the database just in case.`
+      `You reacted to a message (ID: \`${entry.message_id}\`) in this channel but it is none of our <https://leeksbot.hackclub.lorebooks.wiki/meta/allowlisted-channels|allowlisted channels>. We still logged it on the database just in case.`
     )
   } else if (entry.status == "rejected") {
     await sendDM(user,
-      `The message you're trying to flag as leek via reaction was rejected by Leeks Bot Review Queue team (<!subteam^S07SN8KQZFC>). If this is a mistake, please contact one of them via DMs or at #leeksbot-meta channel.`
+      `The message (ID: \`${entry.message_id}\`) you're trying to flag as leek via reaction was rejected by Leeks Bot Review Queue team (<!subteam^${queueTeam}>). If this is a mistake, please contact one of them via DMs or at <#${metaChannel}> channel.`
     )
   }
 }
@@ -136,7 +136,7 @@ export const leeksReactionRemovalCb = async ({
     }
   })
 
-  // if it is not in our database yet, ignore for now
+  // if it is not in our database yet, ignore for now but we will soon.
   if (entry == null) return;
 
   entry = await prisma.slackLeeks.update({
@@ -144,7 +144,7 @@ export const leeksReactionRemovalCb = async ({
       message_id: item.ts
     },
     data: {
-      leeksReact: entry.leeksReact - 1
+      leeks_reacts: entry.leeks_reacts - 1
     }
   })
 }

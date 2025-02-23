@@ -1,6 +1,7 @@
 import { ActionsSection, Blocks, ButtonAction, ContextSection, DividerSection, HeaderSection, MarkdownText, PlainText, TextSection } from "./block-builder";
 import { slackApp } from "../app";
 import { detectEnvForChannel, getBaseSlashCommand } from "./env";
+import { metaChannel, queueTeam } from "./constants";
 
 export const helpCommand = [
   new HeaderSection(new PlainText("Help commands for leeksbot")).render(),
@@ -14,7 +15,7 @@ export const helpCommand = [
   new TextSection(new MarkdownText(`\`${getBaseSlashCommand()} allowlist-channel\` - add current channel to the allowlist`)).render(),
   new TextSection(new MarkdownText(`\`${getBaseSlashCommand()} blocklist-channel\` - remove current channel from the allowlist`)).render(),
   new DividerSection().render(),
-  new TextSection(new MarkdownText("If you found any bugs, please report it in #leeksbot-meta channel or via the <https://github.com/andreijiroh-dev/leeksbot/issues|issue tracker>")).render()
+  new TextSection(new MarkdownText("If you found any bugs, please report it in #leeksbot-meta channel or via the <https://gitlab.com/recaptime-dev/hackclub-leeksbot/issues|issue tracker>")).render()
 ]
 
 export const generateReviewQueueMessage = async (
@@ -93,7 +94,7 @@ export const dequeuedMessage = (
 
 export const permissionDenied = new Blocks([
   new TextSection(new MarkdownText(":x: You are not allowed to use this feature. This is either reserved for bot admins or you're banned from using the bot.")),
-  new TextSection(new MarkdownText("If you think this is a mistake, please contact the bot admins (<!subteam^S07SN8KQZFC>)."))
+  new TextSection(new MarkdownText(`If you think this is a mistake, please contact one of the bot admins (<!subteam^${queueTeam}>) via DMs or at <#${metaChannel}> channel`))
 ]).render()
 
 // TODO: Use this when triggered in a private channel.

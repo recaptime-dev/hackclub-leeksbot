@@ -1,15 +1,10 @@
 import { AllMiddlewareArgs, SlackCommandMiddlewareArgs } from "@slack/bolt";
-import { generateReviewQueueMessage, helpCommand, permissionDenied } from "../../lib/blocks";
-import { botAdmins, queueChannel } from "../../lib/constants";
-import { logOps, prisma } from "../../app";
-import { detectEnvForChannel, getBaseSlashCommand } from "../../lib/env";
-import { Blocks, ContextSection, MarkdownText, PlainText, TextSection } from "../../lib/block-builder";
-import { sendDM } from "../../lib/utils";
+import { helpCommand } from "../../lib/blocks";
+import { logOps } from "../../app";
+import { getBaseSlashCommand } from "../../lib/env";
 import { checkIfAdmin } from "../../lib/admin";
-import { SlackLeeksStatus } from "../../lib/types";
-import { helpOps, pingOps, statusOps } from "./sub-utils";
+import { pingOps, statusOps } from "./sub-utils";
 import { addChannelForLeeks, rmChannelForLeeks } from "./sub-admin";
-import { rm } from "fs";
 import Sentry from "../../lib/sentry";
 
 export const botCommandHandler = async ({

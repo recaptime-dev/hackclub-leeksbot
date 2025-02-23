@@ -15,13 +15,12 @@ const prisma = new PrismaClient();
         },
         create: {
           id: uid,
-          bot_admin: true
+          bot_admin: true,
+          promoted_by: "U07CAPBB9B5"
         },
         update: {
           bot_admin: true,
-          is_banned: false,
-          banned_at: null,
-          banned_by: null,
+          promoted_by: "U07CAPBB9B5"
         }
       })
       console.log("DB Result:", result)

@@ -1,51 +1,52 @@
 import { App, ExpressReceiver, LogLevel } from '@slack/bolt';
 import { registerHandlers } from './handlers';
-import { config, detectEnvForChannel } from './lib/env';
+import { config } from './lib/env';
 import { PrismaClient } from "@prisma/client";
 import { env } from 'process';
 import { ConsoleLogger } from '@slack/logger';
 import { botAdmins, queueChannel } from './lib/constants';
 import { sendDM } from './lib/utils';
+import { IncomingMessage, ServerResponse } from 'http';
+import { ParamsIncomingMessage } from '@slack/bolt/dist/receivers/ParamsIncomingMessage';
 import("./lib/sentry.js")
 
 // Globals
 export const prisma = new PrismaClient();
 export const logOps = new ConsoleLogger()
+const routerKit = new ExpressReceiver({
+  signingSecret: config.slack.sigSecret,
+  logger: logOps
+})
 export const slackApp = new App({
   token: config.slack.botToken,
   appToken: config.slack.appToken,
-  signingSecret: config.slack.sigSecret,
   logLevel: env.LOGOPS_DEBUG !== undefined ? LogLevel.DEBUG : LogLevel.INFO,
   socketMode: config.slack.socketMode,
-  customRoutes: [
-    {
-      path: "/",
-      method: ["GET"],
-      handler(req, res) {
-        const redirect = "Redirecting to <a href='https://leeksbot.hackclub.lorebooks.wiki'>docs</a>"
-        res.writeHead(301, {
-          "content-length": Buffer.byteLength(redirect),
-          location: "https://leeksbot.hackclub.lorebooks.wiki"
-        }).end(redirect)
-      }
-    },
-    {
-      path: "/ping",
-      method: ["GET"],
-      handler(req, res) {
-        const message = "leeksbot is running here now"
-        res.statusCode = 200
-        res.statusMessage = message
-        res.setHeaders(new Headers({
-          "Content-Type": "text/plain",
-          "content-length": Buffer.byteLength(message).toString()
-        }))
-      },
-    }
-  ]
+  receiver: config.slack.socketMode ? undefined : routerKit,
 });
 
 registerHandlers(slackApp);
+
+// HTTP routes (only enabled if socket mode is disabled)
+if (config.slack.socketMode !== true) {
+  routerKit.router.get("/", (_req: ParamsIncomingMessage, res: ServerResponse<IncomingMessage>) => {
+    const redirect = "Redirecting you to <a href='https://leeksbot.hackclub.lorebooks.wiki'>docs in a moment</a>"
+    res.writeHead(301, {
+      "content-length": Buffer.byteLength(redirect),
+      location: "https://leeksbot.hackclub.lorebooks.wiki"
+    }).end(redirect)
+  })
+
+  routerKit.router.get("/ping", (req: ParamsIncomingMessage, res: ServerResponse<IncomingMessage>) => {
+    const message = "leeksbot is running here now"
+    res.statusCode = 200
+    res.statusMessage = message
+    res.setHeaders(new Headers({
+      "Content-Type": "text/plain",
+      "content-length": Buffer.byteLength(message).toString()
+    }))
+  })
+}
 
 (async () => {
   logOps.setLevel(env.LOGOPS_DEBUG !== undefined ? LogLevel.DEBUG : LogLevel.INFO);

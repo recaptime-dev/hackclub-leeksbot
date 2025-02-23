@@ -1,8 +1,8 @@
 import { AllMiddlewareArgs, MessageShortcut, SlackShortcutMiddlewareArgs } from "@slack/bolt";
-import { Blocks, MarkdownText, PlainText, TextSection } from "../../lib/block-builder";
+import { PlainText } from "../../lib/block-builder";
 import { logOps, prisma } from "../../app";
 import { detectEnvForChannel, getBaseSlashCommand } from "../../lib/env";
-import { allowlistedChannels, queueChannel } from "../../lib/constants";
+import { metaChannel, queueChannel, queueTeam } from "../../lib/constants";
 import { dequeuedMessage, dontUseItHere, generateReviewQueueMessage, permissionDenied } from "../../lib/blocks";
 import { extractPermalink, sendDM } from "../../lib/utils";
 import { checkIfAllowlisted } from "../../lib/channel-allowlist";
@@ -66,7 +66,7 @@ export const handleMsgAction = async ({
       data: {
         message_id: message_ts,
         channel_id: channel.id,
-        leeksFlagCount: 1,
+        leeks_flags: 1,
         first_flagged_by: user.id,
         status: isChannelAllowlisted === true ? "pending" : "dequeued",
         permalink_message_id: extractPermalink((await client.chat.getPermalink({
@@ -81,7 +81,7 @@ export const handleMsgAction = async ({
         message_id: message_ts
       },
       data: {
-        leeksFlagCount: entry.leeksFlagCount + 1
+        leeks_flags: entry.leeks_flags + 1
       }
     })
   }
@@ -125,8 +125,8 @@ export const handleMsgAction = async ({
         }
       })
     }
-    await sendDM(user.id, `You flagged as leek to a message (ID: \`${entry.message_id}\`) in this channel using message actions but it is none of our <https://mau.dev/andreijiroh-dev/leeksbot/-/blob/main/lib/constants.ts?ref_type=heads#L22|allowlisted channels>. We still logged it on the database just in case.`)
+    await sendDM(user.id, `You flagged as leek to a message (ID: \`${entry.message_id}\`) in this channel using message actions but it is none of our <https://leeksbot.hackclub.lorebooks.wiki/meta/allowlisted-channels|allowlisted channels>. We still logged it on the database just in case.`)
   } else if (entry.status == "rejected") {
-    await sendDM(user.id, `The message you're trying to flag as leek (ID: \`${entry.message_id}\`) via message action was rejected by Leeks Bot Review Queue team (<!subteam^S07SN8KQZFC>). If this is a mistake, please contact one of them via DMs or at #leeksbot meta channel.`)
+    await sendDM(user.id, `The message you're trying to flag as leek (ID: \`${entry.message_id}\`) via message action was rejected by Leeks Bot Review Queue team (<!subteam^${queueTeam}>). If this is a mistake, please contact one of them via DMs or at <#${metaChannel}> channel`)
   }
 }
