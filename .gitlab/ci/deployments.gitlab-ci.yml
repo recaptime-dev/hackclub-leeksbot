@@ -1,5 +1,5 @@
 update-manifest:
-  stage: update-manifest
+  stage: update-manifests
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
@@ -9,3 +9,25 @@ update-manifest:
     - |
       npx dotenvx run -- sh -c 'curl -X POST -H "Authorization: Bearer $SLACK_APP_MANIFEST_DEPLOY_TOKEN" -H "Content-Type: application/json" --data @manifests/dev.yml https://slack.com/api/apps.manifest.update'
       npx dotenvx run -f .env.production -- sh -c 'curl -X POST -H "Authorization: Bearer $SLACK_APP_MANIFEST_DEPLOY_TOKEN" -H "Content-Type: application/json" --data @manifests/dev.yml https://slack.com/api/apps.manifest.update'
+
+deploy-prod:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - app.ts
+        - package*.json
+        - lib/*
+        - handlers/**/*
+        - prisma/schema.prisma
+        - prisma/migrations/**/*.sql
+      when: always
+      needs: [update-manifest]
+    - when: manual
+  script:
+    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app git -C /home/ajhalili2006/git/leeksbot pull
+    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app cp -v /home/ajhalili2006/git/leeksbot/lib/leeksbot-nest.service /home/ajhalili2006/.config/systemd/user
+    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app systemctl --user stop leeksbot-nest.service || true
+    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app bash -c "set -x; cd /home/ajhalili2006/git/leeksbot && npm i && npm run migrate:prod && npx prisma generate"
+    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app systemctl --user daemon-reload
+    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app systemctl --user start leeksbot-nest.service
