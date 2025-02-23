@@ -54,7 +54,7 @@ model SlackUsers {
   promoted_by String @default("system")
   is_banned Boolean @default(false)
   ban_reason String?
-  banned_by String @default("system")
+  banned_by String? @default("system")
   banned_at DateTime?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

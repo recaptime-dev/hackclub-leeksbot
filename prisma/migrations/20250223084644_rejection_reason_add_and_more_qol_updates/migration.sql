@@ -18,5 +18,4 @@ ADD COLUMN     "rejection_reason" TEXT;
 
 -- AlterTable
 ALTER TABLE "SlackUsers" ADD COLUMN     "promoted_by" TEXT NOT NULL DEFAULT 'system',
-ALTER COLUMN "banned_by" SET NOT NULL,
 ALTER COLUMN "banned_by" SET DEFAULT 'system';
