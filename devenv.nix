@@ -17,6 +17,7 @@
     gitFull
     prisma-engines
     openssl
+    shellcheck
   ];
 
   languages.javascript = {

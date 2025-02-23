@@ -7,8 +7,8 @@
     "start": "dotenvx run -f .env.production -- tsx app.ts",
     "dev": "dotenvx run -f .env -- tsx watch --clear-screen=false app.ts",
     "studio": "npm run studio:dev",
-    "prisma:generate-dev": "dotenvx run -f .env -- prisma generate",
-    "prisma:generate-prod": "dotenvx run -f .env.production -- prisma generate",
+    "generate:dev": "dotenvx run -f .env -- prisma generate",
+    "generate:prod": "dotenvx run -f .env.production -- prisma generate",
     "migrate:dev": "dotenvx run -f .env -- prisma migrate dev",
     "migrate:prod": "dotenvx run -f .env.production -- prisma migrate deploy",
     "studio:dev": "BROWSER=none dotenvx run -f .env -- prisma studio --browser none",
@@ -17,7 +17,8 @@
     "dotenvx:dev": "dotenvx run -f .env --",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "update-deps": "ncu -u"
   },
   "author": {
     "name": "Andrei Jiroh Halili",
@@ -27,7 +28,7 @@
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
-    "url": "https://mau.dev/andreijiroh-dev/leeksbot"
+    "url": "https://gitlab.com/recaptime-dev/hackclub-leeksbot"
   },
   "bugs": {
     "url": "https://mau.dev/andreijiroh-dev/leeksbot/issues"
@@ -36,19 +37,20 @@
     "url": "https://github.com/sponsors/ajhalili2006"
   },
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.21.0",
-    "@prisma/client": "^6.1.0",
-    "@sentry/node": "^8.47.0",
-    "@sentry/profiling-node": "^8.47.0",
-    "@slack/bolt": "^4.0.0",
+    "@dotenvx/dotenvx": "^1.37.0",
+    "@prisma/client": "^6.4.1",
+    "@sentry/node": "^9.1.0",
+    "@sentry/profiling-node": "^9.1.0",
+    "@slack/bolt": "^4.2.0",
     "@slack/logger": "^4.0.0",
-    "tsx": "^4.19.2",
-    "vitepress": "^1.5.0"
+    "tsx": "^4.19.3",
+    "vitepress": "^1.6.3"
   },
   "devDependencies": {
-    "@types/node": "^22.10.3",
-    "prisma": "^6.1.0",
-    "tslib": "^2.7.0",
-    "typescript": "^5.6.2"
+    "@types/node": "^22.13.5",
+    "npm-check-updates": "^17.1.14",
+    "prisma": "^6.4.1",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.3"
   }
 }

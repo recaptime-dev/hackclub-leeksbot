@@ -5,5 +5,5 @@ inputs:
   prisma-utils:
     url: github:VanCoding/nix-prisma-utils
     inputs:
-      pkgs:
+      nixpkgs:
         follows: nixpkgs
