@@ -5,10 +5,12 @@ update-manifest:
       changes:
         - manifests/*.yml
         - .gitlab/ci/deployments.gitlab-ci.yml
+        - .gitlab-ci.yml
   script:
     - |
-      npx dotenvx run -- bash -c 'curl -X POST -H "Authorization: Bearer $SLACK_APP_MANIFEST_DEPLOY_TOKEN" -H "Content-Type: application/json" --data @manifests/dev.yml https://slack.com/api/apps.manifest.update'
-      npx dotenvx run -f .env.production -- bash -c 'curl -X POST -H "Authorization: Bearer $SLACK_APP_MANIFEST_DEPLOY_TOKEN" -H "Content-Type: application/json" --data @manifests/dev.yml https://slack.com/api/apps.manifest.update'
+      echo working on it soon
+      #npx dotenvx run -- bash -c 'curl -X POST -H "Authorization: Bearer $SLACK_APP_MANIFEST_DEPLOY_TOKEN" -H "Content-Type: application/json" --data @manifests/dev.yml https://slack.com/api/apps.manifest.update'
+      #npx dotenvx run -f .env.production -- bash -c 'curl -X POST -H "Authorization: Bearer $SLACK_APP_MANIFEST_DEPLOY_TOKEN" -H "Content-Type: application/json" --data @manifests/dev.yml https://slack.com/api/apps.manifest.update'
 
 deploy-prod:
   stage: deploy
@@ -21,6 +23,9 @@ deploy-prod:
         - handlers/**/*
         - prisma/schema.prisma
         - prisma/migrations/**/*.sql
+        - manifests/*.yml
+        - .gitlab/ci/deployments.gitlab-ci.yml
+        - .gitlab-ci.yml
       when: always
       needs: [update-manifest]
     - when: manual

@@ -12,7 +12,7 @@ before_script:
     echo https://downloads.1password.com/linux/alpinelinux/stable/ >> /etc/apk/repositories
     wget https://downloads.1password.com/linux/keys/alpinelinux/support@1password.com-61ddfc31.rsa.pub -P /etc/apk/keys
     apk update && apk add 1password-cli bash coreutils
-    mkdir /etc/secretskit
+    mkdir -pv /etc/secretskit && mkdir -pv ~/.ssh
     op read "${SSH_PRIVATE_KEY_PATH}?ssh-format=openssh" -o /etc/secretskit/rtdevbot.key
     echo "Host *\n StrictHostKeyChecking no\n HostKey" > ~/.ssh/config
   - npm ci && op inject -i .env.keys.tmpl -o .env.keys
