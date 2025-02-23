@@ -1,7 +1,5 @@
 image:
   name: $CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX/node:22-alpine
-  entrypoint:
-    - /bin/sh
   docker:
     user: root
 
