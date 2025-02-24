@@ -1,0 +1,4 @@
+Host nest
+    Hostname hackclub.app
+    User ajhalili2006
+    IdentityFile /etc/secretskit/rtdevbot.key

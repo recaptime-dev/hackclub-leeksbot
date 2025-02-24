@@ -32,9 +32,9 @@ deploy-prod:
       needs: [update-manifest]
     - when: manual
   script:
-    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app git -C /home/ajhalili2006/git/leeksbot pull
-    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app cp -v /home/ajhalili2006/git/leeksbot/lib/leeksbot-nest.service /home/ajhalili2006/.config/systemd/user
-    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app systemctl --user stop leeksbot-nest.service || true
-    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app bash -c "set -x; cd /home/ajhalili2006/git/leeksbot && npm i && npm run migrate:prod && npx prisma generate"
-    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app systemctl --user daemon-reload
-    - ssh -i /etc/secretskit/rtdevbot.key ajhalili2006@hackclub.app systemctl --user start leeksbot-nest.service
+    - ssh nest git -C /home/ajhalili2006/git/leeksbot pull
+    - ssh nest cp -v /home/ajhalili2006/git/leeksbot/lib/leeksbot-nest.service /home/ajhalili2006/.config/systemd/user
+    - ssh nest systemctl --user stop leeksbot-nest.service || true
+    - ssh nest bash -c "set -x; cd /home/ajhalili2006/git/leeksbot && npm i && npm run migrate:prod && npx prisma generate"
+    - ssh nest systemctl --user daemon-reload
+    - ssh nest systemctl --user start leeksbot-nest.service
