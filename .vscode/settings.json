@@ -11,7 +11,9 @@
     "handlers",
     "manifests",
     "slackApp",
-    "global"
+    "global",
+    "vitepress",
+    "scripts"
   ],
   "conventionalCommits.autoCommit": false,
   "conventionalCommits.showEditor": true
