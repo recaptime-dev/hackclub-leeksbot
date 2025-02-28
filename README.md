@@ -25,7 +25,8 @@ something being cooked on from the HQ without any announcement whatsoever.
 In short, a leak (minus any PII nightmares). For the original usage of the
 term, cue from [Wikipedia]:
 
-> A leek is a vegetable, a cultivar of Allium ampeloprasum, the broadleaf wild leek (syn. Allium porrum). The edible part of the plant is a bundle of leaf sheaths that is sometimes erroneously called a stem or stalk.
+> A leek is a vegetable, a cultivar of Allium ampeloprasum, the broadleaf wild leek (syn. Allium porrum).
+> The edible part of the plant is a bundle of leaf sheaths that is sometimes erroneously called a stem or stalk.
 
 In the [What Hack Club is not] document by Chris Walker of Hack Club HQ:
 

@@ -10,6 +10,17 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'User Guide', link: '/user-guide/getting-started', activeMatch: '^/user-guide/' },
+      { 
+        text: 'Meta',
+        activeMatch: '^/meta/',
+        items: [
+          { text: 'Allowlisted channels', link: '/meta/allowlisted-channels' },
+          { text: 'Data Privacy', link: '/meta/data-privacy' },
+          { text: 'Project Maintainers', link: '/meta/project-maintainers' },
+          { text: 'Contributing to the project', link: '/meta/contributing' },
+          { text: 'Coding style', link: '/meta/code-style' }
+        ]
+      },
     ],
 
     sidebar: [
@@ -21,19 +32,23 @@ export default defineConfig({
         ]
       },
       {
-        text: "Reference",
+        text: "Reference / Meta",
         items: [
           {
             text: "Allowlisted channels",
             link: "/meta/allowlisted-channels"
           },
           {
-            text: "Contributing to the project",
-            link: "/meta/contributing"
+            text: "Data Privacy",
+            link: "/meta/data-privacy"
           },
           {
             text: "Project Maintainers",
             link: "/meta/project-maintainers"
+          },
+          {
+            text: "Contributing to the project",
+            link: "/meta/contributing"
           },
           {
             text: "Coding style",
