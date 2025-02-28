@@ -115,7 +115,7 @@ export const leeksReactionCb = async ({
 export const leeksReactionRemovalCb = async ({
   client,
   event
-}: AllMiddlewareArgs & SlackEventMiddlewareArgs<"reaction_added">) => {
+}: AllMiddlewareArgs & SlackEventMiddlewareArgs<"reaction_removed">) => {
   const { item, reaction, user, event_ts } = event
   const isChannelAllowlisted = await checkIfAllowlisted(item.channel)
 

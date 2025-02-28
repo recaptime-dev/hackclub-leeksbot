@@ -8,6 +8,7 @@ import { botAdmins, queueChannel } from './lib/constants';
 import { sendDM } from './lib/utils';
 import { IncomingMessage, ServerResponse } from 'http';
 import { ParamsIncomingMessage } from '@slack/bolt/dist/receivers/ParamsIncomingMessage';
+import Sentry from './lib/sentry';
 import("./lib/sentry.js")
 
 // Globals
@@ -26,6 +27,8 @@ export const slackApp = new App({
 });
 
 registerHandlers(slackApp);
+logOps.setLevel(env.LOGOPS_DEBUG !== undefined ? LogLevel.DEBUG : LogLevel.INFO);
+logOps.setName("leeksbot");
 
 // HTTP routes (only enabled if socket mode is disabled)
 if (config.slack.socketMode !== true) {
@@ -44,14 +47,11 @@ if (config.slack.socketMode !== true) {
     res.setHeaders(new Headers({
       "Content-Type": "text/plain",
       "content-length": Buffer.byteLength(message).toString()
-    }))
+    })).end(message)
   })
 }
 
 (async () => {
-  logOps.setLevel(env.LOGOPS_DEBUG !== undefined ? LogLevel.DEBUG : LogLevel.INFO);
-  logOps.setName("leeksbot");
-  
   try {
     // connect to db first before bolt.js
     await prisma.$connect();
@@ -63,11 +63,20 @@ if (config.slack.socketMode !== true) {
     logOps.info("slackAppBase", `⚡️ Bolt app now up and running`);
     if (config.slack.socketMode !== true) logOps.info("API server now reachable at port", config.port)
     
-    // notify @ajhalili2006 when the bot is up
-    await sendDM(botAdmins[0], process.env.NODE_ENV == "production" ? "Leeks bot is now online in nest!" : "Leeks bot is now online! (development, apologies for spamming if this annoys you)")
+    // notify @ajhalili2006 (or the first person on env.SLACK_APP_MANAGERS) when the bot is up
+    await sendDM(config.slack.appManagers[0], process.env.NODE_ENV == "production" ? "Leeks bot is now online in nest!" : "Leeks bot is now online! (development, apologies for spamming if this annoys you)")
   } catch (error) {
-    console.error('Something went wrong during startup - ', error);
+    // if something gone wrong, notify then exit
+    Sentry.captureException(error);
+    logOps.error("slackAppBase", "Error during startup", error)
+    await slackApp.client.chat.postMessage({
+      channel: queueChannel,
+      text: `Something went wrong during startup (also logged at Sentry):\n\`\`\`\n${error}\n\`\`\``,
+      mrkdwn: true
+    })
+    logOps.debug
     await slackApp.stop()
     await prisma.$disconnect()
+    process.exit(1)
   }
 })();

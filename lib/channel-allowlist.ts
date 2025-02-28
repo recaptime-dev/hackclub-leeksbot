@@ -1,6 +1,6 @@
 import { prisma, slackApp } from "../app";
 import { queueChannel } from "./constants";
-import { isBotInChannel, sendDM } from "./utils";
+import { isBotInChannel, sendDM, sendEmpheral } from "./utils";
 
 export async function checkIfAllowlisted(channelId: string) {
   const channel = await prisma.slackChannels.findFirst({
@@ -105,7 +105,9 @@ export async function removeChannelFromAllowlist(channelId: string, admin: strin
       channel: queueChannel,
       text: `Channel <#${channelId}> has been removed from allowlist by <@${admin}> (or is already blocklisted and the bot left).`
     })
+
+    await sendEmpheral(admin, channelId, `You successfully removed <#${channelId}> from the allowlist.`)
   } else if (data.allowlisted === false) {
-    await sendDM(admin, `Channel <#${channelId}> is already blocklisted.`)
+    await sendEmpheral(admin, channelId, `Channel <#${channelId}> is already blocklisted.`)
   }
 }

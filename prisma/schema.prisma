@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// This is the Prisma schema file we use for data persistence at leeksbot.
+// Prisma docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -11,6 +8,7 @@ generator client {
 
 datasource db {
   provider          = "postgresql"
+  // to load these database URLs, you need to use dotenvx to decrypt the secrets
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
@@ -19,19 +17,20 @@ model SlackLeeks {
   // message and channel IDs
   message_id           String  @id @unique
   channel_id           String // TODO: Turn this into a link to SlackChannels
-  permalink_message_id String? // for now
+  permalink_message_id String? // for now since we need to backfill older entries
 
-  // posted message ID in leeks
+  // posted message ID in leeks if approved
   leeks_channel_post_id String?
 
   // for moderation part
   first_flagged_by String
   status           String  @default("pending")
   review_queue_id  String?
-  is_major_leek    Boolean @default(false) // from one of ship feedback on HS
-  rejection_reason String?
+  // taken from High Seas ship feedback
+  is_major_leek    Boolean @default(false)
+  rejection_reason String? // not yet implemented yet
 
-  // stats
+  // anon stats
   leeks_reacts     Int @default(0)
   leeks_flags Int @default(0)
 
@@ -41,7 +40,7 @@ model SlackLeeks {
 }
 
 model SlackChannels {
-  id String @id @unique
+  id String @id @unique // Slack channel ID
   allowlisted Boolean @default(false)
   allowlisted_by String @default("system")
   created_at DateTime @default(now())
@@ -49,11 +48,11 @@ model SlackChannels {
 }
 
 model SlackUsers {
-  id String @id @unique
+  id String @id @unique // Slack user ID
   bot_admin Boolean @default(false)
   promoted_by String @default("system")
-  is_banned Boolean @default(false)
-  ban_reason String?
+  is_banned Boolean @default(false) // just a boolean to check if user is banned for abuse
+  ban_reason String? // used by review queue admins for modlogs
   banned_by String? @default("system")
   banned_at DateTime?
   created_at DateTime @default(now())

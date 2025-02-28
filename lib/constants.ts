@@ -21,7 +21,7 @@ export const botAdmins = [
 ];
 
 /**
- * The custom emoji IDs for #hackclub-leeks channel.
+ * The custom emoji IDs for the #hackclub-leeks channel.
  */
 export const leeksReactionEmojis = [
   "leeks",
@@ -53,10 +53,10 @@ export const allowlistedChannels = [
 export const leeksChannel = "C06089401GT";
 
 /**
- * Technically the channel ID of ~ajhalili2006's private channel for
- * Slack app development and workflow testing.
+ * The Slack channel ID of #recaptime-dev:hackclub.slack.com's testing channel
+ * for testing Slack API features and friends.
  */
-export const testingCenter = "C07F3GDQMJS"
+export const testingCenter = "C08FJBC7TA9"
 
 /**
  * The queue channel for Leeks bot to send notifications about flags and
