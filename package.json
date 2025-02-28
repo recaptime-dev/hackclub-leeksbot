@@ -43,6 +43,7 @@
     "@sentry/profiling-node": "^9.1.0",
     "@slack/bolt": "^4.2.0",
     "@slack/logger": "^4.0.0",
+    "markdown-it-footnote": "^4.0.0",
     "tsx": "^4.19.3",
     "vitepress": "^1.6.3"
   },

@@ -1,4 +1,5 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from 'vitepress';
+import footnote from 'markdown-it-footnote';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -67,13 +68,20 @@ export default defineConfig({
         dateStyle: 'medium',
         hour12: false
       }
-    }
+    },
   },
 
   // set base URL and make sure URLs are clean
   cleanUrls: true,
   sitemap: {
     hostname: 'https://leeksbot.hackclub.lorebooks.wiki',
+  },
+
+  markdown: {
+    cache: true,
+    config(mdit) {
+      mdit.use(footnote)
+    },
   },
 
   outDir: "../public"
