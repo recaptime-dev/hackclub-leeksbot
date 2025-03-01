@@ -6,6 +6,7 @@ import { checkIfAdmin } from "../../lib/admin";
 import { pingOps, statusOps } from "./sub-utils";
 import { addChannelForLeeks, rmChannelForLeeks } from "./sub-admin";
 import Sentry from "../../lib/sentry";
+import { slackEventLogger } from "../../lib/utils";
 
 export const botCommandHandler = async ({
   ack,
@@ -22,16 +23,7 @@ export const botCommandHandler = async ({
   try {
     const isThisBotAdmin = await checkIfAdmin(user_id);
   
-    logOps.info(
-      "received slash command data:",
-      JSON.stringify({
-        text,
-        user_id,
-        channel_id,
-        channel_name,
-        params,
-        isThisBotAdmin
-    }))
+    slackEventLogger("leeks", payload, "slash_comamnds")
   
     // ack first
     await ack()

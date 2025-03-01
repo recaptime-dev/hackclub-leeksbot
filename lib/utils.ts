@@ -1,5 +1,5 @@
-import { AllMiddlewareArgs, BlockButtonAction, SlackCommandMiddlewareArgs, SlackEventMiddlewareArgs, SlashCommand } from "@slack/bolt";
-import { slackApp } from "../app";
+import { AllMiddlewareArgs, BlockButtonAction, SlackCommandMiddlewareArgs, SlackEventMiddlewareArgs, SlackViewAction, SlashCommand } from "@slack/bolt";
+import { logOps, slackApp } from "../app";
 import Sentry from "./sentry";
 import { ChatPostEphemeralArguments, ReactionAddedEvent, ReactionRemovedEvent, WebClient } from "@slack/web-api";
 
@@ -106,7 +106,7 @@ export async function isBotInChannel(channelId: string) {
  * @param error The error object
  */
 export async function catchExceptionAndReplyError(
-  data: ReactionAddedEvent | ReactionRemovedEvent | SlashCommand | BlockButtonAction,
+  data: ReactionAddedEvent | ReactionRemovedEvent | SlashCommand | BlockButtonAction | SlackViewAction,
   client: WebClient,
   error: any)
 {
@@ -116,47 +116,44 @@ export async function catchExceptionAndReplyError(
     return;
   }
 
+  let user = undefined
+
+  if ('user' in data && typeof data.user == "string") {
+    user = data.user
+  } else if ('user' in data && typeof data.user == "object") {
+    user = data.user.id
+  } else if ('user_id' in data && typeof data.user_id == "string") {
+    user = data.user_id
+  }
+
+  const errorId = Sentry.captureException(error, {
+    extra: {
+      data,
+    },
+    tags: {
+      type: data.type
+    },
+    user
+  });
+
+  // only notify the user if in slash commands
   if ('command' in data && 'user_id' in data && 'channel_id' in data) {
     await client.chat.postEphemeral({
       channel: data.channel_id,
       user: data.user_id,
-      text: `An error occurred while processing your command. The error has been reported to the developers.`
+      text: `An error occurred while processing your command. The error has been reported to the developers wtih Sentry error ID \`${errorId}\`.`
     })
+  } else {
+    logOps.info(`error-telemetry`, errorId)
   }
+}
 
-  const tags = {
-    channel: undefined,
-    user: undefined,
-    message: undefined,
-    trigger_id: undefined,
-    value: undefined,
-    action_id: undefined,
-    command: undefined,
-    reaction: undefined,
-  }
-
-  if ('reaction' in data && 'item' in data) {
-    tags.reaction = data.reaction
-    tags.channel = data.item.channel
-    tags.message = data.item.ts
-  } else if ('actions' in data && 'channel' in data && 'message' in data) {
-    tags.trigger_id = data.trigger_id
-    tags.value = data.actions[0].value
-    tags.action_id = data.actions[0].action_id
-    tags.channel = data.channel.id
-    tags.user = data.user
-    tags.message = data.message
-  } else if ('command' in data && 'user_id' in data && 'channel_id' in data) {
-    tags.command = data.command
-    tags.channel = data.channel_id
-    tags.user = data.user_id
-  }
-
-  Sentry.captureException(error, {
-    extra: {
-      data,
-    },
-    tags,
-    user: tags.user
-  });
+export function slackEventLogger(origin: string, data: any, type?: string) {
+  logOps.debug(origin, `received event data ${type !== null ? 'with kind ' + 'type' : "" }:`, JSON.stringify(data))
+  return Sentry.captureEvent(data, {
+    data: {
+      origin,
+      type
+    }
+  })
 }

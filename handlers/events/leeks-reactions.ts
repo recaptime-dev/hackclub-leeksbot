@@ -6,7 +6,7 @@ import { leeksReactionEmojis, metaChannel, queueChannel, queueTeam } from "../..
 import { detectEnvForChannel, getBaseSlashCommand } from "../../lib/env";
 import { logOps, prisma, slackApp } from "../../app";
 import { dequeuedMessage, generateReviewQueueMessage } from "../../lib/blocks";
-import { extractPermalink, sendDM } from "../../lib/utils";
+import { extractPermalink, sendDM, slackEventLogger } from "../../lib/utils";
 import { checkIfAllowlisted } from "../../lib/channel-allowlist";
 
 export const leeksReactionCb = async ({
@@ -16,13 +16,7 @@ export const leeksReactionCb = async ({
   const { item, reaction, user, event_ts } = event
   const isChannelAllowlisted = await checkIfAllowlisted(item.channel)
 
-  logOps.info("Received reaction data: ", JSON.stringify({
-    item,
-    user,
-    reaction,
-    event_ts,
-    isChannelAllowlisted
-  }))
+  slackEventLogger("leeks-reactions", event, "event:reaction_added")
 
   const permalink = (await slackApp.client.chat.getPermalink({
     channel: item.channel,
@@ -119,13 +113,7 @@ export const leeksReactionRemovalCb = async ({
   const { item, reaction, user, event_ts } = event
   const isChannelAllowlisted = await checkIfAllowlisted(item.channel)
 
-  logOps.info("Received reaction data: ", JSON.stringify({
-    item,
-    user,
-    reaction,
-    event_ts,
-    isChannelAllowlisted
-  }))
+  slackEventLogger("leeks-reactions", event, "event:reaction_removed")
 
   if (item.channel === detectEnvForChannel()) return;
   if (!leeksReactionEmojis.includes(reaction)) return;

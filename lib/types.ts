@@ -19,6 +19,7 @@ export type SlackLeekTypes = {
   first_flagged_by: string
   status: SlackLeeksStatus
   review_queue_id?: string
+  rejection_reason?: string
   leeks_reacts: number
   leeks_flags: number
   is_major_leek: boolean

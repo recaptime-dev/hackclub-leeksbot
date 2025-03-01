@@ -9,20 +9,24 @@ import { botAdmins, queueChannel } from '../../lib/constants';
 import { generateReviewQueueMessage, permissionDenied } from '../../lib/blocks';
 import {
   ActionsSection,
+  Block,
   Blocks,
   ButtonAction,
   ContextSection,
+  InputSection,
   MarkdownText,
   PlainText,
+  PlainTextInput,
   TextSection
 } from '../../lib/block-builder';
-import { sendDM } from '../../lib/utils';
+import { catchExceptionAndReplyError, sendDM, slackEventLogger } from '../../lib/utils';
 import { checkIfAdmin } from '../../lib/admin';
 import { SlackLeeksStatus, SlackLeekTypes } from '../../lib/types';
 import Sentry from '../../lib/sentry';
 
 export const approveLeekFlag = async ({ ack, client, body }:
   AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
+  slackEventLogger("review-queue", body, body.type)
   try {
     logOps.debug(`review-queue`, `received event data:`, JSON.stringify(body))
     const { user, actions, channel, message } = body
@@ -119,7 +123,7 @@ export const approveLeekFlag = async ({ ack, client, body }:
 
 export const denyLeekFlag = async ({ ack, client, body }:
   AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
-  logOps.debug(`review-queue`, `received event data:`, JSON.stringify(body))
+  slackEventLogger("review-queue", body, body.type)
   const { user, actions, channel, message } = body
   const { id: botAdminId } = user
   const { value } = actions[0]
@@ -193,10 +197,72 @@ export const denyLeekFlag = async ({ ack, client, body }:
   })
 }
 
+export const denyLeekFlagModal = async ({ ack, client, body}:
+  AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>
+) => {
+  try {
+    slackEventLogger("review-queue", body, "block_buttons")
+    const { user, actions, channel, message, trigger_id } = body
+    const { value } = actions[0]
+  
+    await ack();
+  
+    const entry = await prisma.slackLeeks.findFirst({
+      where: {
+        message_id: value
+      }
+    }) as SlackLeekTypes
+  
+    if (!await checkIfAdmin(user.id)) {
+      await client.chat.postEphemeral({
+        channel: channel.id,
+        user: user.id,
+        blocks: permissionDenied
+      })
+  
+      return;
+    }
+  
+    let introText = `You are about to reject this leek flag with message ID \`${value}\` from <@${entry.first_flagged_by}>. If you enter a reason why you rejected it, it will be shared with the original flagger (via DMs) and anyone via \`/leeks status\` command.`
+  
+    if (entry.status == SlackLeeksStatus.Rejected) {
+      introText = `You are about to update the rejection reason for this leek flag with message \`${value}\` from <@${entry.first_flagged_by}>. The reason for the rejection from the database is \`${entry.rejection_reason ?? "no reason provided"}, so updating it may notify the original flagger via DMs.`
+    }
+  
+    const blocks = [
+      new TextSection(
+        new MarkdownText(introText)
+      ),
+      new InputSection(
+        new PlainTextInput("rejection_reason", false),
+        new PlainText("Reason"),
+        value
+      ),
+      new TextSection(
+        new MarkdownText("*Can I update this later (or remove altogether)?* Yes, you can update it later by pressing `Edit reason` on the leek flag notification.")
+      ),
+    ]
+  
+    await client.views.open({
+      trigger_id,
+      view: {
+        type: "modal",
+        callback_id: "rejection_reason_form",
+        submit: new PlainText("Submit and reject").render(),
+        close: new PlainText("Cancel action").render(),
+        title: new PlainText("Submit rejection reason").render(),
+        blocks: new Blocks(blocks).render()
+      }
+    })
+  } catch (error) {
+    await catchExceptionAndReplyError(body, client, error)
+  }
+}
+
 export const addToQueueHandler = async ({
   ack, client, body
 }: AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
-  logOps.debug(`review-queue`, `received event data:`, JSON.stringify(body))
+  slackEventLogger("review-queue", body, "block_buttons")
   const { user, actions, channel, message } = body
   const { id: botAdminId } = user
   const { value } = actions[0]

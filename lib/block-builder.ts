@@ -18,15 +18,15 @@ abstract class Renderable {
   abstract render(): any;
 }
 
-abstract class Block extends Renderable {
+export abstract class Block extends Renderable {
   constructor(protected block_id: string | null = null) {
     super();
   }
 }
 
-abstract class Section extends Block { }
+export abstract class Section extends Block { }
 
-abstract class Text extends Renderable { }
+export abstract class Text extends Renderable { }
 
 export class PlainText extends Text {
   constructor(private text: string, private emoji: boolean = true) {
