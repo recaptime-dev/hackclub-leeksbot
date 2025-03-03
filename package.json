@@ -41,7 +41,7 @@
     "@prisma/client": "^6.4.1",
     "@sentry/node": "^9.1.0",
     "@sentry/profiling-node": "^9.1.0",
-    "@slack/bolt": "^4.2.0",
+    "@slack/bolt": "^4.2.1",
     "@slack/logger": "^4.0.0",
     "markdown-it-footnote": "^4.0.0",
     "tsx": "^4.19.3",
