@@ -37,7 +37,7 @@
     "url": "https://github.com/sponsors/ajhalili2006"
   },
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.37.0",
+    "@dotenvx/dotenvx": "^1.38.4",
     "@prisma/client": "^6.4.1",
     "@sentry/node": "^9.1.0",
     "@sentry/profiling-node": "^9.1.0",
