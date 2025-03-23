@@ -1,0 +1,31 @@
+{
+  "name": "@leeksbot/tools",
+  "version": "0.1.0",
+  "description": "why",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "manifests:dev": "dotenvx run -fk ../.env.keys -f ../.env -- tsx ./update-app-manifest.ts",
+    "manifests:prod": "dotenvx run -fk ../.env.keys -f ../.env.production -- tsx ./update-app-manifest.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/recaptime-dev/hackclub-leeksbot.git"
+  },
+  "author": "",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://gitlab.com/recaptime-dev/hackclub-leeksbot/issues"
+  },
+  "homepage": "https://gitlab.com/recaptime-dev/hackclub-leeksbot#readme",
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.38.4",
+    "tsx": "^4.19.3",
+    "yaml": "^2.7.0"
+  },
+  "config": {
+    "prisma": {
+      "schema": "../prisma/schema.prisma"
+    }
+  }
+}

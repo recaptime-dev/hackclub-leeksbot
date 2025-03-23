@@ -1,7 +1,7 @@
 import { App, ExpressReceiver, LogLevel } from '@slack/bolt';
 import { registerHandlers } from './handlers';
 import { config } from './lib/env';
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "./prisma/client";
 import { env } from 'process';
 import { ConsoleLogger } from '@slack/logger';
 import { botAdmins, queueChannel } from './lib/constants';
@@ -32,22 +32,24 @@ logOps.setName("leeksbot");
 
 // HTTP routes (only enabled if socket mode is disabled)
 if (config.slack.socketMode !== true) {
-  routerKit.router.get("/", (_req: ParamsIncomingMessage, res: ServerResponse<IncomingMessage>) => {
-    const redirect = "Redirecting you to <a href='https://leeksbot.hackclub.lorebooks.wiki'>docs in a moment</a>"
-    res.writeHead(301, {
-      "content-length": Buffer.byteLength(redirect),
-      location: "https://leeksbot.hackclub.lorebooks.wiki"
-    }).end(redirect)
+  routerKit.app.get("/", (_req, res) => {
+    res.redirect("https://leeksbot.hackclub.lorebooks.wiki")
   })
 
-  routerKit.router.get("/ping", (req: ParamsIncomingMessage, res: ServerResponse<IncomingMessage>) => {
-    const message = "leeksbot is running here now"
-    res.statusCode = 200
-    res.statusMessage = message
-    res.setHeaders(new Headers({
-      "Content-Type": "text/plain",
-      "content-length": Buffer.byteLength(message).toString()
-    })).end(message)
+  routerKit.app.get("/ping", (_req, res) => {
+    res.json({
+      ok: true,
+      message: "leeksbot is running here now"
+    }).status(200)
+  })
+
+  routerKit.app.get("/internals/bot-admins", async (req, res) => {
+    if (!req.header("x-leeksbot-api-token")) {
+      res.status(400).json({
+        ok: false,
+        error: "Unauthorized"
+      })
+    }
   })
 }
 
