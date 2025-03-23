@@ -179,16 +179,21 @@ export class HeaderSection extends Section {
 abstract class Input extends Renderable { }
 
 export class PlainTextInput extends Input {
-  constructor(private action_id: string, private multiline: boolean = false) {
+  constructor(private action_id: string, private multiline: boolean = false, private initial_value: string = null) {
     super();
   }
 
   render(): any {
-    return {
+    let data: { type: string; multiline: boolean; action_id: string; initial_value?: string } = {
       type: "plain_text_input",
       multiline: this.multiline,
       action_id: this.action_id,
     };
+
+    if (typeof this.initial_value == "string") {
+      data.initial_value = this.initial_value
+    }
+    return data
   }
 }
 
@@ -196,6 +201,7 @@ export class InputSection extends Section {
   constructor(
     private input: Input,
     private label: Text,
+    private optional: boolean = false,
     block_id: string | null = null
   ) {
     super(block_id);
@@ -207,6 +213,7 @@ export class InputSection extends Section {
       element: this.input.render(),
       label: this.label.render(),
       block_id: this.block_id,
+      optional: this.optional
     };
   }
 }

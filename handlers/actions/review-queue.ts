@@ -224,9 +224,18 @@ export const denyLeekFlagModal = async ({ ack, client, body}:
     }
   
     let introText = `You are about to reject this leek flag with message ID \`${value}\` from <@${entry.first_flagged_by}>. If you enter a reason why you rejected it, it will be shared with the original flagger (via DMs) and anyone via \`/leeks status\` command.`
+    let reasonText = entry.rejection_reason ?? "no reason provided"
   
     if (entry.status == SlackLeeksStatus.Rejected) {
-      introText = `You are about to update the rejection reason for this leek flag with message \`${value}\` from <@${entry.first_flagged_by}>. The reason for the rejection from the database is \`${entry.rejection_reason ?? "no reason provided"}, so updating it may notify the original flagger via DMs.`
+      introText = `You are about to update the rejection reason for this leek flag with message \`${value}\` from <@${entry.first_flagged_by}>. The reason for the rejection from the database is \`${reasonText}, so updating it may notify the original flagger via DMs.`
+    }
+
+    let autofill: string | null
+
+    if (reasonText == "no reason provided") {
+      autofill = null
+    } else {
+      autofill = entry.rejection_reason
     }
   
     const blocks = [
@@ -234,8 +243,9 @@ export const denyLeekFlagModal = async ({ ack, client, body}:
         new MarkdownText(introText)
       ),
       new InputSection(
-        new PlainTextInput("rejection_reason", false),
+        new PlainTextInput("rejection_reason", false, autofill),
         new PlainText("Reason"),
+        true,
         value
       ),
       new TextSection(

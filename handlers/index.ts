@@ -3,10 +3,12 @@ import { eventsRegistry } from "./events";
 import { blockActionsRegistry } from "./actions";
 import { botComamndsRegistry } from "./commands";
 import { msgShortcutRegistry } from "./shortcuts";
+import { viewRegistry } from "./views";
 
 export const registerHandlers = (slackApp: App) => {
   eventsRegistry(slackApp);
   blockActionsRegistry(slackApp);
   botComamndsRegistry(slackApp);
   msgShortcutRegistry(slackApp);
+  viewRegistry(slackApp);
 }

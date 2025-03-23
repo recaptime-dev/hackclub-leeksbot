@@ -3,7 +3,7 @@ display_information:
   name: Hack Club Leeks Lab
   description: We're testing things for the leeksbot behind the scenes :)
   background_color: "#15a372"
-  long_description: 'The development instance of Hack Club Leeks Bot, where we test new features and bug fixes behind the scenes before we ship them to production. If you are contributing to the project and need its credentials, contact @ajhalili2006.'
+  long_description: "The development instance of Hack Club Leeks Bot, where we test new features and bug fixes behind the scenes before we ship them to production. If you are contributing to the project and need its credentials, contact @ajhalili2006."
 features:
   bot_user:
     display_name: Hack Club Leeks Dev
@@ -26,13 +26,14 @@ oauth_config:
       - channels:read
       - channels:history
       - chat:write
-      - im:write
-      - commands
-      - emoji:read
-      - channels:join
-      - groups:read
-      - mpim:read
-      - im:read
+      - im:write # to DM people on flag status, etc.
+      - commands # for slash commands integration
+      - emoji:read # for reacts
+      - channels:join # used by /leeks allowlist
+      - groups:read # private channel convo history reading, as needed on message edits
+      - groups:history # for the modal flow on rejections
+      - mpim:read # only for metadata
+      - im:read # only for metadata
 settings:
   event_subscriptions:
     bot_events:
