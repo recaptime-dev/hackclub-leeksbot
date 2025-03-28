@@ -8,39 +8,39 @@ export enum SlackLeeksStatus {
   Approved = "approved",
   Rejected = "rejected",
   FlaggedAsNotLeek = "flagged_as_notleek",
-  Ignored = "ignored"
+  Ignored = "ignored",
 }
 
 export type SlackLeekTypes = {
-  message_id: string
-  channel_id: string
-  permalink_message_id?: string
-  leeks_channel_post_id?: string
-  first_flagged_by: string
-  status: SlackLeeksStatus
-  review_queue_id?: string
-  rejection_reason?: string
-  leeks_reacts: number
-  leeks_flags: number
-  is_major_leek: boolean
-  readonly created_at: Date
-  readonly updated_at: Date
-}
+  message_id: string;
+  channel_id: string;
+  permalink_message_id?: string;
+  leeks_channel_post_id?: string;
+  first_flagged_by: string;
+  status: SlackLeeksStatus;
+  review_queue_id?: string;
+  rejection_reason?: string;
+  leeks_reacts: number;
+  leeks_flags: number;
+  is_major_leek: boolean;
+  readonly created_at: Date;
+  readonly updated_at: Date;
+};
 
 export type SlackChannelTypes = {
-  id: string
-  allowlisted: boolean
-  readonly created_at: Date
-  readonly updated_at: Date
-}
+  id: string;
+  allowlisted: boolean;
+  readonly created_at: Date;
+  readonly updated_at: Date;
+};
 
 export type SlackUserTypes = {
-  id: string
-  bot_admin: boolean
-  is_banned: boolean
-  ban_reason?: string
-  banned_by?: string
-  banned_at?: Date
-  readonly created_at: Date
-  readonly updated_at: Date
-}
+  id: string;
+  bot_admin: boolean;
+  is_banned: boolean;
+  ban_reason?: string;
+  banned_by?: string;
+  banned_at?: Date;
+  readonly created_at: Date;
+  readonly updated_at: Date;
+};

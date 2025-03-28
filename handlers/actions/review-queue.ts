@@ -1,12 +1,12 @@
 import {
   AllMiddlewareArgs,
   BlockButtonAction,
-  SlackActionMiddlewareArgs
-} from '@slack/bolt';
-import { logOps, prisma } from '../../app';
-import { detectEnvForChannel, getBaseSlashCommand } from '../../lib/env';
-import { botAdmins, queueChannel } from '../../lib/constants';
-import { generateReviewQueueMessage, permissionDenied } from '../../lib/blocks';
+  SlackActionMiddlewareArgs,
+} from "@slack/bolt";
+import { logOps, prisma } from "../../app";
+import { detectEnvForChannel, getBaseSlashCommand } from "../../lib/env";
+import { botAdmins, queueChannel } from "../../lib/constants";
+import { generateReviewQueueMessage, permissionDenied } from "../../lib/blocks";
 import {
   ActionsSection,
   Block,
@@ -17,85 +17,96 @@ import {
   MarkdownText,
   PlainText,
   PlainTextInput,
-  TextSection
-} from '../../lib/block-builder';
-import { catchExceptionAndReplyError, sendDM, slackEventLogger } from '../../lib/utils';
-import { checkIfAdmin } from '../../lib/admin';
-import { SlackLeeksStatus, SlackLeekTypes } from '../../lib/types';
-import Sentry from '../../lib/sentry';
+  TextSection,
+} from "../../lib/block-builder";
+import {
+  catchExceptionAndReplyError,
+  sendDM,
+  slackEventLogger,
+} from "../../lib/utils";
+import { checkIfAdmin } from "../../lib/admin";
+import { SlackLeeksStatus, SlackLeekTypes } from "../../lib/types";
+import Sentry from "../../lib/sentry";
 
-export const approveLeekFlag = async ({ ack, client, body }:
-  AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
-  slackEventLogger("review-queue", body, body.type)
+export const approveLeekFlag = async ({
+  ack,
+  client,
+  body,
+}: AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
+  slackEventLogger("review-queue", body, body.type);
   try {
-    logOps.debug(`review-queue`, `received event data:`, JSON.stringify(body))
-    const { user, actions, channel, message } = body
-    const { id: botAdminId } = user
-    const { value } = actions[0]
-  
+    logOps.debug(`review-queue`, `received event data:`, JSON.stringify(body));
+    const { user, actions, channel, message } = body;
+    const { id: botAdminId } = user;
+    const { value } = actions[0];
+
     // ack it first before doing any other processing
-    await ack()
-  
+    await ack();
+
     // check if the user is a bot admin
-    if (await checkIfAdmin(botAdminId) == false) {
+    if ((await checkIfAdmin(botAdminId)) == false) {
       await client.chat.postEphemeral({
         channel: channel.id,
         user: botAdminId,
-        blocks: permissionDenied
-      })
-  
+        blocks: permissionDenied,
+      });
+
       return;
     }
-  
-    let entry = await prisma.slackLeeks.findFirst({
+
+    let entry = (await prisma.slackLeeks.findFirst({
       where: {
-        message_id: value
-      }
-    }) as SlackLeekTypes
-  
+        message_id: value,
+      },
+    })) as SlackLeekTypes;
+
     // get permalink of original message
     const { permalink } = await client.chat.getPermalink({
       channel: entry.channel_id,
-      message_ts: entry.message_id
-    })
-  
+      message_ts: entry.message_id,
+    });
+
     // get conversation ID for a user on DMs
     const { channel: imChannelData } = await client.conversations.open({
-      users: entry.first_flagged_by
-    })
-  
-    logOps.info(`review-queue:${entry.message_id}`, `posting to channel ${detectEnvForChannel()}, approved by ${botAdminId}`)
+      users: entry.first_flagged_by,
+    });
+
+    logOps.info(
+      `review-queue:${entry.message_id}`,
+      `posting to channel ${detectEnvForChannel()}, approved by ${botAdminId}`,
+    );
     const posted = await client.chat.postMessage({
       channel: detectEnvForChannel(),
       text: `${actions[0].action_id === "approve_leek_major" ? ":eyes: :leek: :warning: *MAJOR LEEK AHEAD*" : ":eyes: :leek: *Leek ahead*"}: ${permalink}`,
-      mrkdwn: true
-    })
-  
-    entry = await prisma.slackLeeks.update({
+      mrkdwn: true,
+    });
+
+    entry = (await prisma.slackLeeks.update({
       where: {
-        message_id: entry.message_id
+        message_id: entry.message_id,
       },
       data: {
         leeks_channel_post_id: posted.ts,
         status: SlackLeeksStatus.Approved as SlackLeeksStatus,
-        is_major_leek: actions[0].action_id === "approve_leek_major" ? true : false
-      }
-    }) as SlackLeekTypes
-  
-    const approvalMessage = `:white_check_mark: Approved by <@${botAdminId}> as ${actions[0].action_id === "approve_leek_major" ? "major" : "minor"} leek`
-  
+        is_major_leek:
+          actions[0].action_id === "approve_leek_major" ? true : false,
+      },
+    })) as SlackLeekTypes;
+
+    const approvalMessage = `:white_check_mark: Approved by <@${botAdminId}> as ${actions[0].action_id === "approve_leek_major" ? "major" : "minor"} leek`;
+
     await client.chat.postMessage({
       channel: queueChannel,
       thread_ts: entry.review_queue_id,
       text: approvalMessage,
       //username: "leeksbot audit logs"
-    })
-  
+    });
+
     await client.chat.postMessage({
       channel: imChannelData.id,
-      text: `Hey <@${entry.first_flagged_by}>! Thanks for finding that real leek and is now approved by <@${botAdminId}>, check it now at <#${detectEnvForChannel()}>.`
-    })
-  
+      text: `Hey <@${entry.first_flagged_by}>! Thanks for finding that real leek and is now approved by <@${botAdminId}>, check it now at <#${detectEnvForChannel()}>.`,
+    });
+
     await client.chat.update({
       channel: queueChannel,
       ts: entry.review_queue_id,
@@ -107,79 +118,91 @@ export const approveLeekFlag = async ({ ack, client, body }:
         new TextSection(new MarkdownText(approvalMessage)).render(),
         new ActionsSection([
           new ButtonAction(
-            new PlainText(":leftwards_arrow_with_hook: Undo approval and delete", true),
+            new PlainText(
+              ":leftwards_arrow_with_hook: Undo approval and delete",
+              true,
+            ),
             entry.message_id,
-            "delete")
+            "delete",
+          ),
         ]).render(),
         new ContextSection([
-          new MarkdownText(`Original message ID on database: \`${entry.message_id}\``)
-        ]).render()
-      ]
-    })
+          new MarkdownText(
+            `Original message ID on database: \`${entry.message_id}\``,
+          ),
+        ]).render(),
+      ],
+    });
   } catch (error) {
-    Sentry.captureException(error)
+    Sentry.captureException(error);
   }
-}
+};
 
-export const denyLeekFlag = async ({ ack, client, body }:
-  AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
-  slackEventLogger("review-queue", body, body.type)
-  const { user, actions, channel, message } = body
-  const { id: botAdminId } = user
-  const { value } = actions[0]
+export const denyLeekFlag = async ({
+  ack,
+  client,
+  body,
+}: AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
+  slackEventLogger("review-queue", body, body.type);
+  const { user, actions, channel, message } = body;
+  const { id: botAdminId } = user;
+  const { value } = actions[0];
 
   // ack it first before doing any other processing
-  await ack()
+  await ack();
 
   // check if the user is a bot admin
-  if (await checkIfAdmin(botAdminId) == false) {
+  if ((await checkIfAdmin(botAdminId)) == false) {
     await client.chat.postEphemeral({
       channel: channel.id,
       user: botAdminId,
-      blocks: permissionDenied
-    })
+      blocks: permissionDenied,
+    });
 
     return;
   }
 
   let entry = await prisma.slackLeeks.findFirst({
     where: {
-      message_id: value
-    }
-  })
+      message_id: value,
+    },
+  });
 
   // get permalink of original message
   const { permalink } = await client.chat.getPermalink({
     channel: entry.channel_id,
-    message_ts: entry.message_id
-  })
+    message_ts: entry.message_id,
+  });
 
   // get conversation ID for a user on DMs
   const { channel: imChannelData } = await client.conversations.open({
-    users: entry.first_flagged_by
-  })
+    users: entry.first_flagged_by,
+  });
 
-  logOps.info(`review-queue:${entry.message_id}`, `denying from queue by ${botAdminId}`)
+  logOps.info(
+    `review-queue:${entry.message_id}`,
+    `denying from queue by ${botAdminId}`,
+  );
   entry = await prisma.slackLeeks.update({
     where: {
       message_id: entry.message_id,
     },
     data: {
-      status: SlackLeeksStatus.Rejected
-    }
-  })
+      status: SlackLeeksStatus.Rejected,
+    },
+  });
 
   await client.chat.postMessage({
     channel: imChannelData.id,
-    text: `Hey <@${entry.first_flagged_by}>! Your leek flag was denied by <@${botAdminId}>. If you have questions, please reach out to the review queue team if you have questions.`
-  })
+    text: `Hey <@${entry.first_flagged_by}>! Your leek flag was denied by <@${botAdminId}>. If you have questions, please reach out to the review queue team if you have questions.`,
+  });
 
   await client.chat.postMessage({
     channel: queueChannel,
     thread_ts: entry.review_queue_id,
     text: `:x: Denied by <@${botAdminId}>`,
     //username: "leeksbot audit logs"
-  })
+  });
 
   await client.chat.update({
     channel: queueChannel,
@@ -189,70 +212,76 @@ export const denyLeekFlag = async ({ ack, client, body }:
       message.blocks[1],
       message.blocks[2],
       message.blocks[3],
-      new TextSection(new MarkdownText(`:x: Denied by <@${botAdminId}>`)).render(),
+      new TextSection(
+        new MarkdownText(`:x: Denied by <@${botAdminId}>`),
+      ).render(),
       new ContextSection([
-        new MarkdownText(`Original message ID on database: \`${entry.message_id}\``)
-      ]).render()
-    ]
-  })
-}
+        new MarkdownText(
+          `Original message ID on database: \`${entry.message_id}\``,
+        ),
+      ]).render(),
+    ],
+  });
+};
 
-export const denyLeekFlagModal = async ({ ack, client, body}:
-  AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>
-) => {
+export const denyLeekFlagModal = async ({
+  ack,
+  client,
+  body,
+}: AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
   try {
-    slackEventLogger("review-queue", body, "block_buttons")
-    const { user, actions, channel, message, trigger_id } = body
-    const { value } = actions[0]
-  
+    slackEventLogger("review-queue", body, "block_buttons");
+    const { user, actions, channel, message, trigger_id } = body;
+    const { value } = actions[0];
+
     await ack();
-  
-    const entry = await prisma.slackLeeks.findFirst({
+
+    const entry = (await prisma.slackLeeks.findFirst({
       where: {
-        message_id: value
-      }
-    }) as SlackLeekTypes
-  
-    if (!await checkIfAdmin(user.id)) {
+        message_id: value,
+      },
+    })) as SlackLeekTypes;
+
+    if (!(await checkIfAdmin(user.id))) {
       await client.chat.postEphemeral({
         channel: channel.id,
         user: user.id,
-        blocks: permissionDenied
-      })
-  
+        blocks: permissionDenied,
+      });
+
       return;
     }
-  
-    let introText = `You are about to reject this leek flag with message ID \`${value}\` from <@${entry.first_flagged_by}>. If you enter a reason why you rejected it, it will be shared with the original flagger (via DMs) and anyone via \`/leeks status\` command.`
-    let reasonText = entry.rejection_reason ?? "no reason provided"
-  
+
+    let introText = `You are about to reject this leek flag with message ID \`${value}\` from <@${entry.first_flagged_by}>. If you enter a reason why you rejected it, it will be shared with the original flagger (via DMs) and anyone via \`/leeks status\` command.`;
+    let reasonText = entry.rejection_reason ?? "no reason provided";
+
     if (entry.status == SlackLeeksStatus.Rejected) {
-      introText = `You are about to update the rejection reason for this leek flag with message \`${value}\` from <@${entry.first_flagged_by}>. The reason for the rejection from the database is \`${reasonText}, so updating it may notify the original flagger via DMs.`
+      introText = `You are about to update the rejection reason for this leek flag with message \`${value}\` from <@${entry.first_flagged_by}>. The reason for the rejection from the database is \`${reasonText}, so updating it may notify the original flagger via DMs.`;
     }
 
-    let autofill: string | null
+    let autofill: string | null;
 
     if (reasonText == "no reason provided") {
-      autofill = null
+      autofill = null;
     } else {
-      autofill = entry.rejection_reason
+      autofill = entry.rejection_reason;
     }
-  
+
     const blocks = [
-      new TextSection(
-        new MarkdownText(introText)
-      ),
+      new TextSection(new MarkdownText(introText)),
       new InputSection(
         new PlainTextInput("rejection_reason", false, autofill),
         new PlainText("Reason"),
         true,
-        value
+        value,
       ),
       new TextSection(
-        new MarkdownText("*Can I update this later (or remove altogether)?* Yes, you can update it later by pressing `Edit reason` on the leek flag notification.")
+        new MarkdownText(
+          "*Can I update this later (or remove altogether)?* Yes, you can update it later by pressing `Edit reason` on the leek flag notification.",
+        ),
       ),
-    ]
-  
+    ];
+
     await client.views.open({
       trigger_id,
       view: {
@@ -261,49 +290,51 @@ export const denyLeekFlagModal = async ({ ack, client, body}:
         submit: new PlainText("Submit and reject").render(),
         close: new PlainText("Cancel action").render(),
         title: new PlainText("Submit rejection reason").render(),
-        blocks: new Blocks(blocks).render()
-      }
-    })
+        blocks: new Blocks(blocks).render(),
+      },
+    });
   } catch (error) {
-    await catchExceptionAndReplyError(body, client, error)
+    await catchExceptionAndReplyError(body, client, error);
   }
-}
+};
 
 export const addToQueueHandler = async ({
-  ack, client, body
+  ack,
+  client,
+  body,
 }: AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
-  slackEventLogger("review-queue", body, "block_buttons")
-  const { user, actions, channel, message } = body
-  const { id: botAdminId } = user
-  const { value } = actions[0]
+  slackEventLogger("review-queue", body, "block_buttons");
+  const { user, actions, channel, message } = body;
+  const { id: botAdminId } = user;
+  const { value } = actions[0];
 
   // ack it first before doing any other processing
-  await ack()
+  await ack();
 
-  if (await checkIfAdmin(botAdminId) === false) {
+  if ((await checkIfAdmin(botAdminId)) === false) {
     await client.chat.postEphemeral({
       channel: channel.id,
       user: botAdminId,
-      blocks: permissionDenied
-    })
+      blocks: permissionDenied,
+    });
 
     return;
   }
 
   let entry = await prisma.slackLeeks.findFirst({
     where: {
-      message_id: value
-    }
-  })
+      message_id: value,
+    },
+  });
 
   await prisma.slackLeeks.update({
     where: {
-      message_id: entry.message_id
+      message_id: entry.message_id,
     },
     data: {
-      status: SlackLeeksStatus.Pending
-    }
-  })
+      status: SlackLeeksStatus.Pending,
+    },
+  });
 
   await client.chat.update({
     channel: queueChannel,
@@ -312,50 +343,56 @@ export const addToQueueHandler = async ({
       entry.message_id,
       entry.channel_id,
       entry.first_flagged_by,
-      "requeued"
-    )
-  })
+      "requeued",
+    ),
+  });
 
-  await sendDM(entry.first_flagged_by, `Hey there, we have requeued your leek flag (message ID: ${entry.message_id}) for review by an admin. Expect another message here for any updates.`)
-}
+  await sendDM(
+    entry.first_flagged_by,
+    `Hey there, we have requeued your leek flag (message ID: ${entry.message_id}) for review by an admin. Expect another message here for any updates.`,
+  );
+};
 
-export const undoApproveLeek = async ({ ack, client, body }:
-  AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
+export const undoApproveLeek = async ({
+  ack,
+  client,
+  body,
+}: AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
   const { user, actions, message, channel } = body;
-  const { id: botAdminId } = user
-  const { value, } = actions[0]
-  const isAdmin = await checkIfAdmin(botAdminId)
+  const { id: botAdminId } = user;
+  const { value } = actions[0];
+  const isAdmin = await checkIfAdmin(botAdminId);
 
   // ack it first before doing any other processing
-  await ack()
+  await ack();
 
   if (!isAdmin) {
     await client.chat.postEphemeral({
       channel: channel.id,
       user: botAdminId,
-      blocks: permissionDenied
-    })
+      blocks: permissionDenied,
+    });
 
     return;
   }
 
   let entry = await prisma.slackLeeks.findFirst({
     where: {
-      message_id: value
-    }
-  })
+      message_id: value,
+    },
+  });
 
-  if (entry.status == 'approved') {
+  if (entry.status == "approved") {
     await client.chat.postMessage({
       channel: detectEnvForChannel(),
       thread_ts: entry.leeks_channel_post_id,
-      text: ":warning: This leek was flagged as false positive by an reviewer. Please stop replying to this thread and apologies for those notified."
-    })
+      text: ":warning: This leek was flagged as false positive by an reviewer. Please stop replying to this thread and apologies for those notified.",
+    });
 
     await client.chat.delete({
       channel: detectEnvForChannel(),
-      ts: entry.leeks_channel_post_id
-    })
+      ts: entry.leeks_channel_post_id,
+    });
 
     await client.chat.update({
       channel: queueChannel,
@@ -365,56 +402,78 @@ export const undoApproveLeek = async ({ ack, client, body }:
         message.blocks[1],
         message.blocks[2],
         message.blocks[3],
-        new TextSection(new MarkdownText(`:leftwards_arrow_with_hook: Undo approval and delete by <@${botAdminId}>`)).render(),
+        new TextSection(
+          new MarkdownText(
+            `:leftwards_arrow_with_hook: Undo approval and delete by <@${botAdminId}>`,
+          ),
+        ).render(),
         new ContextSection([
-          new MarkdownText(`Original message ID on database: \`${entry.message_id}\``)
-        ]).render()
-      ]
-    })
+          new MarkdownText(
+            `Original message ID on database: \`${entry.message_id}\``,
+          ),
+        ]).render(),
+      ],
+    });
 
     await client.chat.postMessage({
       channel: queueChannel,
       thread_ts: entry.review_queue_id,
       text: `:leftwards_arrow_with_hook: Reversed by <@${botAdminId}>`,
-    })
+    });
 
     entry = await prisma.slackLeeks.update({
       where: {
-        message_id: entry.message_id
+        message_id: entry.message_id,
       },
       data: {
         leeks_channel_post_id: "deleted",
-        status: SlackLeeksStatus.FlaggedAsNotLeek
-      }
-    })
+        status: SlackLeeksStatus.FlaggedAsNotLeek,
+      },
+    });
 
-    await sendDM(entry.first_flagged_by, `Hey there, we had to taken down your previously flagged leek from the channel because it is not a leek. You can appeal it in #leeksbot-meta if this is really a leek.`)
-  } else if (entry.status == SlackLeeksStatus.FlaggedAsNotLeek || entry.status == SlackLeeksStatus.Rejected) {
+    await sendDM(
+      entry.first_flagged_by,
+      `Hey there, we had to taken down your previously flagged leek from the channel because it is not a leek. You can appeal it in #leeksbot-meta if this is really a leek.`,
+    );
+  } else if (
+    entry.status == SlackLeeksStatus.FlaggedAsNotLeek ||
+    entry.status == SlackLeeksStatus.Rejected
+  ) {
     await client.views.open({
       trigger_id: body.trigger_id,
       view: {
         type: "modal",
         title: new PlainText("Leek already flagged as not leek").render(),
         blocks: new Blocks([
-          new TextSection(new MarkdownText(`This leek was already flagged as not leek or rejected. If you need to reflag this, run \`${getBaseSlashCommand()} queue ${entry.message_id}\`.`))
-        ]).render()
-      }
-    })
+          new TextSection(
+            new MarkdownText(
+              `This leek was already flagged as not leek or rejected. If you need to reflag this, run \`${getBaseSlashCommand()} queue ${entry.message_id}\`.`,
+            ),
+          ),
+        ]).render(),
+      },
+    });
   }
-}
+};
 
-export const ignore_leek = async ({ ack, client, body }:
-  AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
+export const ignore_leek = async ({
+  ack,
+  client,
+  body,
+}: AllMiddlewareArgs & SlackActionMiddlewareArgs<BlockButtonAction>) => {
   // ack first
   await ack();
 
   // get DB data before doing anything
   const entry = await prisma.slackLeeks.findFirst({
     where: {
-      review_queue_id: body.actions[0].value
-    }
-  })
-  logOps.info(`review-queue:${entry.message_id}`, `ignoring and deleting review_queue message`)
+      review_queue_id: body.actions[0].value,
+    },
+  });
+  logOps.info(
+    `review-queue:${entry.message_id}`,
+    `ignoring and deleting review_queue message`,
+  );
 
   await client.views.open({
     trigger_id: body.trigger_id,
@@ -422,23 +481,27 @@ export const ignore_leek = async ({ ack, client, body }:
       type: "modal",
       title: new PlainText("Queue message removed").render(),
       blocks: new Blocks([
-        new TextSection(new MarkdownText(`If you need this back, just send \`${getBaseSlashCommand()} queue ${entry.message_id}\` and it will be added back here.`))
-      ]).render()
-    }
-  })
+        new TextSection(
+          new MarkdownText(
+            `If you need this back, just send \`${getBaseSlashCommand()} queue ${entry.message_id}\` and it will be added back here.`,
+          ),
+        ),
+      ]).render(),
+    },
+  });
 
   await prisma.slackLeeks.update({
     where: {
-      message_id: body.actions[0].value
+      message_id: body.actions[0].value,
     },
     data: {
       review_queue_id: "deleted",
-      status: SlackLeeksStatus.Ignored
-    }
-  })
+      status: SlackLeeksStatus.Ignored,
+    },
+  });
 
   await client.chat.delete({
     channel: queueChannel,
-    ts: body.message.ts
-  })
-}
+    ts: body.message.ts,
+  });
+};

@@ -28,7 +28,7 @@ features:
 
 ## History
 
-For the uninitialized (especially for new Hack Clubbers), the term `leek` 
+For the uninitialized (especially for new Hack Clubbers), the term `leek`
 ([originally a vegetable], specifically the Allium ampeloprasum scientifically speaking)
 is used to say that something from the HQ is being cooked behind the scenes and
 either spotted in the wild or leeked by a HQ staff themselves, hence a leak.
@@ -42,4 +42,5 @@ staff, see [the history of this debacle][ban-context] for context) and a progres
 [Hack Club]: https://hackclub.com
 [slack]: https://hackclub.com/slack
 [originally a vegetable]: https://en.wikipedia.org/wiki/Leek
-[ban-context]: 
+
+[ban-context]:

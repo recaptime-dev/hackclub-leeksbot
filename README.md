@@ -38,7 +38,7 @@ In the [What Hack Club is not] document by Chris Walker of Hack Club HQ:
 > details are not released (such as to preserve the privacy or dignity of members).
 > Events or initiatives may involve elements of secrecy (usually because surprises are fun).
 > If you want to know something but it hasn't been made public, ask about it; you
-> aren't *guaranteed* an answer, but frequently information is not shared simply because
+> aren't _guaranteed_ an answer, but frequently information is not shared simply because
 > it is impractical to put every possible thing out in the open.
 
 The channel `#hackclub-leeks` was created October 9th, 2023 by Reese Armstrong,
@@ -56,7 +56,7 @@ added feature of review queues to ensure nothing go wrong and to avoid troubles 
 The term `leek` was also seen being used in the wild through the
 following instances, as documented by Hack Clubbers:
 
-* TODO: list them here
+- TODO: list them here
 
 ## Features
 
@@ -80,6 +80,7 @@ Department if found breaking [the Hack Club Code of Conduct].
 - Documentation at `./docs`: CC-BY-SA-4.0
 
 <!-- links -->
+
 [the Hack Club Code of Conduct]: ./CODE_OF_CONDUCT.md
 [the @recaptime-dev GitHub organization]: https://github.com/recaptime-dev
 [Recap Time Squad]: https://recaptime.dev
@@ -90,4 +91,5 @@ Department if found breaking [the Hack Club Code of Conduct].
 [Wikipedia]: https://en.wikipedia.org/wiki/Leek
 
 <!-- footnotes -->
+
 [^1]: [Nest](https://hackclub.app) is a HQ-funded project and part of [the tildeverse](https://tildeverse.org). Although Hack Club funds the tilde to pay for the dedicated Linux server on Hetzer from donors, please note that the admins are unpaid volunteers and maintain it on their own time.

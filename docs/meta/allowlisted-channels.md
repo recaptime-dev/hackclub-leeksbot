@@ -15,19 +15,20 @@ we enable leeks flagging on a per-channel basis.
 In order for a channel to be allowlisted for use of leek flagging, a Slack channel in
 Hack Club Slack must be:
 
-* publicly accessible (a.k.a. no private channels and group DMs)
-* must be affliated with the HQ
-  * YSWS program channels usually count here, but it must be officially sponsored/run by a HQ staff
-  * eligiability for HQ staff's personal channels may vary, but we look at how prominent
-  they are (e.g. `#zrl-land` for Zach Latta himself)
-* are considered by community in terms of interest (e.g. `#new-channels` although it may
-dox people who create channels and then get them private)
+- publicly accessible (a.k.a. no private channels and group DMs)
+- must be affliated with the HQ
+  - YSWS program channels usually count here, but it must be officially sponsored/run by a HQ staff
+  - eligiability for HQ staff's personal channels may vary, but we look at how prominent
+    they are (e.g. `#zrl-land` for Zach Latta himself)
+- are considered by community in terms of interest (e.g. `#new-channels` although it may
+  dox people who create channels and then get them private)
 
 Due to Slack API limitations and Hack Club HQ's [restrictions on data scraping/mining] [^1] for
 community-built Slack apps, we can't natively forward messages via the API nor store the
 original message contents in database and keep file attachments somewhere else.
 
 [restrictions on data scraping/mining]: https://hackclub.slack.com/archives/C0188CY57PZ/p1727208216604979
+
 [^1]: The thread we linked is not necessarily the policy itself, but
 
 ## How to request?

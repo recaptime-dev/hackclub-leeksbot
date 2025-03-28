@@ -102,12 +102,12 @@ These people are either inactive for at least 3 months or retired from the revie
 
 To join the `@leeksbot-review-queue-team` user group on Slack and grant you maintainer permissions to the repository, you need to:
 
-* be a active Hack Clubber with at least few hours of coverage between timezones
-  * Either as a high schooler or alumni, although I am currently prioritize those currently at school at the moment.
-  * People at the HQ/HCB/Fire Department can join to help reviewing flagged leeks to avoid accidentially leaking PII and other things as needed, although please note that this is a community project and not a HQ-sanctioned one.
-* proficient in using TypeScript, build Slack apps using Bolt.js and doing database persistence with Prisma ORM
-* follow the [RecapTime.dev Community Code of Conduct](https://policies.recaptime.dev/code-of-conduct) and
-[Hack Club CoC](https://hackclub.xom/conduct)
+- be a active Hack Clubber with at least few hours of coverage between timezones
+  - Either as a high schooler or alumni, although I am currently prioritize those currently at school at the moment.
+  - People at the HQ/HCB/Fire Department can join to help reviewing flagged leeks to avoid accidentially leaking PII and other things as needed, although please note that this is a community project and not a HQ-sanctioned one.
+- proficient in using TypeScript, build Slack apps using Bolt.js and doing database persistence with Prisma ORM
+- follow the [RecapTime.dev Community Code of Conduct](https://policies.recaptime.dev/code-of-conduct) and
+  [Hack Club CoC](https://hackclub.xom/conduct)
 
 If you're up, [contact Andrei Jiroh](https://andreijiroh.dev/contact) on Slack and join `#leeksbot-meta` channel, or file a new issue in the repository's issue tracker. Currently access are given based on trust, recent Slack activity and previous open-source
 contributions (or maintainer activity if they are also building)

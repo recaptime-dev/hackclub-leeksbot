@@ -1,24 +1,36 @@
-import { AllMiddlewareArgs, BlockButtonAction, SlackCommandMiddlewareArgs, SlackEventMiddlewareArgs, SlackViewAction, SlashCommand } from "@slack/bolt";
+import {
+  AllMiddlewareArgs,
+  BlockButtonAction,
+  SlackCommandMiddlewareArgs,
+  SlackEventMiddlewareArgs,
+  SlackViewAction,
+  SlashCommand,
+} from "@slack/bolt";
 import { logOps, slackApp } from "../app";
 import Sentry from "./sentry";
-import { ChatPostEphemeralArguments, ReactionAddedEvent, ReactionRemovedEvent, WebClient } from "@slack/web-api";
+import {
+  ChatPostEphemeralArguments,
+  ReactionAddedEvent,
+  ReactionRemovedEvent,
+  WebClient,
+} from "@slack/web-api";
 
 /**
  * Extracts the last part of Slack message permalink through some regex.
  * Note that this code is AI-assisted via plain Google Gemini (not
  * Gemini Code Assist in Google Cloud Platform).
- * 
+ *
  * Note that since this could break things at the database side if we received
  * a leek through a message inside the thread, but we'll fix that later.
- * 
+ *
  * @param permalinkUrl The full message permalink from Slack
- * @returns 
+ * @returns
  */
 export function extractPermalink(permalinkUrl) {
   const url = new URL(permalinkUrl);
-  const pathname = url.pathname.split('/');
+  const pathname = url.pathname.split("/");
   const lastPathSegment = pathname[pathname.length - 1];
-  if (lastPathSegment.startsWith('p')) {
+  if (lastPathSegment.startsWith("p")) {
     return lastPathSegment;
   }
 }
@@ -28,59 +40,64 @@ export function extractPermalink(permalinkUrl) {
  * `client.conversations.open` first (it'll do that for you behind the scenes).
  * @param user Slack user ID
  * @param data Either a string or a object following `client.chat.postMessage` parameters in Bolt.js
- * @returns 
+ * @returns
  */
 export async function sendDM(user: string, data: string | object) {
   try {
-    const {channel: imChannelData} = await slackApp.client.conversations.open({
-      users: user
-    })
-  
+    const { channel: imChannelData } = await slackApp.client.conversations.open(
+      {
+        users: user,
+      },
+    );
+
     let postMessageData: any = {
       channel: imChannelData.id,
-    }
-  
+    };
+
     if (typeof data == "string") {
-      postMessageData.text = data
+      postMessageData.text = data;
     } else if (typeof data == "object") {
-      Object.assign(postMessageData, data)
+      Object.assign(postMessageData, data);
     }
-  
-    return await slackApp.client.chat.postMessage(postMessageData)
+
+    return await slackApp.client.chat.postMessage(postMessageData);
   } catch (error) {
-    throw Error(error)
+    throw Error(error);
   }
 }
 
-export async function sendEmpheral(user: string, channel: string, data: string | object) {
+export async function sendEmpheral(
+  user: string,
+  channel: string,
+  data: string | object,
+) {
   try {
     let postEphemeralData: ChatPostEphemeralArguments = {
       channel,
       user,
-      attachments: []
-    }
-    
-    if (typeof data == "string"){
-      postEphemeralData.text = data
+      attachments: [],
+    };
+
+    if (typeof data == "string") {
+      postEphemeralData.text = data;
     } else if (typeof data == "object") {
-      Object.assign(postEphemeralData, data)
+      Object.assign(postEphemeralData, data);
     }
-    
-    await slackApp.client.chat.postEphemeral(postEphemeralData)
+
+    await slackApp.client.chat.postEphemeral(postEphemeralData);
   } catch (error) {
-    throw Error(error)
+    throw Error(error);
   }
 }
-
 
 /**
  * Utility function to get the Slack app's bot user ID, mainly used to check if the bot
  * in question is in a specific channel via {@linkcode isBotInChannel}.
- * @returns 
+ * @returns
  */
 export async function getBotUserId() {
-  const {user_id} = await slackApp.client.auth.test()
-  return user_id
+  const { user_id } = await slackApp.client.auth.test();
+  return user_id;
 }
 
 /**
@@ -89,41 +106,46 @@ export async function getBotUserId() {
  * @returns Returns true if the bot is there, returns false otherwise.
  */
 export async function isBotInChannel(channelId: string) {
-  const botUserId = await getBotUserId()
-  const {members} = await slackApp.client.conversations.members({
-    channel: channelId
-  })
+  const botUserId = await getBotUserId();
+  const { members } = await slackApp.client.conversations.members({
+    channel: channelId,
+  });
 
-  return members.includes(botUserId)
+  return members.includes(botUserId);
 }
 
 /**
  * Utility function to catch an exception from a Slack event and report it to Sentry with the
  * necessary metadata for backend telemetry, then reply to the user with a generic error message.
- * 
+ *
  * @param data The event data that caused the error
  * @param client The WebClient instance from Bolt.js
  * @param error The error object
  */
 export async function catchExceptionAndReplyError(
-  data: ReactionAddedEvent | ReactionRemovedEvent | SlashCommand | BlockButtonAction | SlackViewAction,
+  data:
+    | ReactionAddedEvent
+    | ReactionRemovedEvent
+    | SlashCommand
+    | BlockButtonAction
+    | SlackViewAction,
   client: WebClient,
-  error: any)
-{
+  error: any,
+) {
   // check if it is an "acknowledged" error which means a client has already
   // done some of the acknowledged steps already
   if (error instanceof Error && error.name === "acknowledged") {
     return;
   }
 
-  let user = undefined
+  let user = undefined;
 
-  if ('user' in data && typeof data.user == "string") {
-    user = data.user
-  } else if ('user' in data && typeof data.user == "object") {
-    user = data.user.id
-  } else if ('user_id' in data && typeof data.user_id == "string") {
-    user = data.user_id
+  if ("user" in data && typeof data.user == "string") {
+    user = data.user;
+  } else if ("user" in data && typeof data.user == "object") {
+    user = data.user.id;
+  } else if ("user_id" in data && typeof data.user_id == "string") {
+    user = data.user_id;
   }
 
   const errorId = Sentry.captureException(error, {
@@ -131,29 +153,33 @@ export async function catchExceptionAndReplyError(
       data,
     },
     tags: {
-      type: data.type
+      type: data.type,
     },
-    user
+    user,
   });
 
   // only notify the user if in slash commands
-  if ('command' in data && 'user_id' in data && 'channel_id' in data) {
+  if ("command" in data && "user_id" in data && "channel_id" in data) {
     await client.chat.postEphemeral({
       channel: data.channel_id,
       user: data.user_id,
-      text: `An error occurred while processing your command. The error has been reported to the developers wtih Sentry error ID \`${errorId}\`.`
-    })
+      text: `An error occurred while processing your command. The error has been reported to the developers wtih Sentry error ID \`${errorId}\`.`,
+    });
   } else {
-    logOps.info(`error-telemetry`, errorId)
+    logOps.info(`error-telemetry`, errorId);
   }
 }
 
 export function slackEventLogger(origin: string, data: any, type?: string) {
-  logOps.debug(origin, `received event data ${type !== null ? 'with kind ' + 'type' : "" }:`, JSON.stringify(data))
+  logOps.debug(
+    origin,
+    `received event data ${type !== null ? "with kind " + "type" : ""}:`,
+    JSON.stringify(data),
+  );
   return Sentry.captureEvent(data, {
     data: {
       origin,
-      type
-    }
-  })
+      type,
+    },
+  });
 }

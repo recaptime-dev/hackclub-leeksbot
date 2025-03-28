@@ -5,45 +5,48 @@ const prisma = new PrismaClient();
 
 (async () => {
   try {
-    await prisma.$connect()
+    await prisma.$connect();
 
     for (const uid of botAdmins) {
-      console.log("Migrating Slack bot admin ID to SlackUsers table:", uid)
+      console.log("Migrating Slack bot admin ID to SlackUsers table:", uid);
       const result = await prisma.slackUsers.upsert({
         where: {
-          id: uid
+          id: uid,
         },
         create: {
           id: uid,
           bot_admin: true,
-          promoted_by: "U07CAPBB9B5"
+          promoted_by: "U07CAPBB9B5",
         },
         update: {
           bot_admin: true,
-          promoted_by: "U07CAPBB9B5"
-        }
-      })
-      console.log("DB Result:", result)
+          promoted_by: "U07CAPBB9B5",
+        },
+      });
+      console.log("DB Result:", result);
     }
 
     for (const channel of allowlistedChannels) {
-      console.log("Migrating Slack channel ID to SlackChannels table:", channel)
+      console.log(
+        "Migrating Slack channel ID to SlackChannels table:",
+        channel,
+      );
       const result = await prisma.slackChannels.upsert({
         where: {
-          id: channel
+          id: channel,
         },
         create: {
           id: channel,
-          allowlisted: true
+          allowlisted: true,
         },
         update: {
-          allowlisted: true
-        }
-      })
-      console.log("DB Result:", result)
+          allowlisted: true,
+        },
+      });
+      console.log("DB Result:", result);
     }
   } catch (error) {
-    console.error('Something gone wrong', error);
-    await prisma.$disconnect()
+    console.error("Something gone wrong", error);
+    await prisma.$disconnect();
   }
 })();

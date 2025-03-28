@@ -10,11 +10,8 @@
     "allowSyntheticDefaultImports": true,
     "target": "ES2022",
     "outDir": "./dist",
-    "allowJs": true, /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */
-    "checkJs": true,
+    "allowJs": true /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */,
+    "checkJs": true
   },
-  "exclude": [
-    "node_modules/**",
-    "dist/**"
-  ]
+  "exclude": ["node_modules/**", "dist/**"]
 }

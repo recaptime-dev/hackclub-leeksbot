@@ -5,24 +5,24 @@ currently maintained by a single person (like any project at Recap Time Squad)
 
 ## Preflight Checklist
 
-* Read and understand the project's [code of conduct](https://gitlab.com/recaptime-dev/hackclub-leeksbot/-/blob/main/CODE_OF_CONDUCT.md) and [our coding style](./code-style.md)
-* Agree to the [Developer's Certificate of Origin](https://developercertificate.org/)
-(We don't do CLAs here to minimize legal admin headaches with the HCB team.)
-* For Hack Clubbers, join the `#leeksbot-meta` channel for coordinating Slack app development.
+- Read and understand the project's [code of conduct](https://gitlab.com/recaptime-dev/hackclub-leeksbot/-/blob/main/CODE_OF_CONDUCT.md) and [our coding style](./code-style.md)
+- Agree to the [Developer's Certificate of Origin](https://developercertificate.org/)
+  (We don't do CLAs here to minimize legal admin headaches with the HCB team.)
+- For Hack Clubbers, join the `#leeksbot-meta` channel for coordinating Slack app development.
 
 ## More ways to contribute
 
 If writing TypeScript code or documentation is not your thing or can't donate your time for the project,
 you can still contribute in other ways:
 
-* **Donate to [Recap Time Squad][hcb-donate] or [Hack Club Nest][hcb-donate-nest].** While we run the bot on Nest
-and use Nest Postgres, donating to Recap Time Squad will help us pay biils such as domain renewals and support
-the team and infrastructure behind projects like these.
-* **Report bugs and submit feature requests in the issue tracker.** You can also suggest and report bugs in the
-meta channel, but using GitLab issues is preferred so we can track work in the same place as commits and deployments
-happen.
-* **Keep finding for leeks in the Slack.** Simply use the bot (or forward to the leeks channel in case of downtime)
-as usual.
+- **Donate to [Recap Time Squad][hcb-donate] or [Hack Club Nest][hcb-donate-nest].** While we run the bot on Nest
+  and use Nest Postgres, donating to Recap Time Squad will help us pay biils such as domain renewals and support
+  the team and infrastructure behind projects like these.
+- **Report bugs and submit feature requests in the issue tracker.** You can also suggest and report bugs in the
+  meta channel, but using GitLab issues is preferred so we can track work in the same place as commits and deployments
+  happen.
+- **Keep finding for leeks in the Slack.** Simply use the bot (or forward to the leeks channel in case of downtime)
+  as usual.
 
 [hcb-donate]: https://hcb.hackclub.com/donations/start/recaptime-dev
 [hcb-donate-nest]: https://hcb.hackclub.com/donations/start/nest
@@ -69,15 +69,15 @@ op inject -i .env.keys.tmpl -o .env.keys
 If the CLI says that you don't have access to either the vault or the item itself, try these troubleshooting
 steps:
 
-* Sign into RecapTime.dev 1Password team first on your 1Password CLI or desktop app.
-* Select your Recap Time Squad crew account on 1Password when prompted at `op signin`. You may need to
-reauthenicate or enable CLI integration in developer settings to do so.
-* Check if you can access `CI/CD Secrets and InfraOps` vault. If you don't have access, you can ask
-Andrei Jiroh for a invite to the team as community contributor or provision you a temporary service
-account auth token.
-  * If you have provisioned a temporary read-only service account auth token, set its value to the
-  `OP_SERVICE_ACCOUNT_TOKEN` variable on your shell session. Keep it in a safe place and do not share
-  with anyone.
+- Sign into RecapTime.dev 1Password team first on your 1Password CLI or desktop app.
+- Select your Recap Time Squad crew account on 1Password when prompted at `op signin`. You may need to
+  reauthenicate or enable CLI integration in developer settings to do so.
+- Check if you can access `CI/CD Secrets and InfraOps` vault. If you don't have access, you can ask
+  Andrei Jiroh for a invite to the team as community contributor or provision you a temporary service
+  account auth token.
+  - If you have provisioned a temporary read-only service account auth token, set its value to the
+    `OP_SERVICE_ACCOUNT_TOKEN` variable on your shell session. Keep it in a safe place and do not share
+    with anyone.
 
 ## Commit message style
 

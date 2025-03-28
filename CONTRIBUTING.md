@@ -4,9 +4,9 @@ Thank you for your interest in contributing into the project!
 
 ## Preflight Checklist
 
-* [ ] Read and understand the project's [code of conduct](./CODE_OF_CONDUCT.md)
-* [ ] Agree to the [Developer's Certificate of Origin](https://developercertificate.org/) (We don't do CLAs here to minimize legal admin headaches with the HCB team.)
-* [ ] For Hack Clubbers, join the `#leeksbot-meta` (app dev and project meta discusions) and the main `#hackclub-leeks` channel.
+- [ ] Read and understand the project's [code of conduct](./CODE_OF_CONDUCT.md)
+- [ ] Agree to the [Developer's Certificate of Origin](https://developercertificate.org/) (We don't do CLAs here to minimize legal admin headaches with the HCB team.)
+- [ ] For Hack Clubbers, join the `#leeksbot-meta` (app dev and project meta discusions) and the main `#hackclub-leeks` channel.
 
 ### Requirements
 
@@ -15,18 +15,18 @@ the installation guide).
 
 Alternatively, you can manually set up your development environment with the following
 
-* Node.js 20.x or later - When using `nvm` or `asdf`, please use the even-numbered LTS versions
-(if the latest version is even-numbered,wait until the official LTS announcement)
-when testing and contributing code.
-* Postgres 14+ - You can run a Dockerized Postgres server or use Nest Postgres for that.
-To use `prisma migrate` commands, you need two databases, one for data persistence and another for migrations.
+- Node.js 20.x or later - When using `nvm` or `asdf`, please use the even-numbered LTS versions
+  (if the latest version is even-numbered,wait until the official LTS announcement)
+  when testing and contributing code.
+- Postgres 14+ - You can run a Dockerized Postgres server or use Nest Postgres for that.
+  To use `prisma migrate` commands, you need two databases, one for data persistence and another for migrations.
 
 ## Running a local dev instance
 
 1. Ask @ajhalili2006 for the `DOTENV_PRIVATE_KEY` to decrypt the dev secrets via `dotenvx`.
-    * Alternatively, reset everything by blanking the contents of `.env.development` (without commiting
-    on your personal
-    branch/fork to avoid conflicts) and configure your own secrets via `dotenvx set`
+   - Alternatively, reset everything by blanking the contents of `.env.development` (without commiting
+     on your personal
+     branch/fork to avoid conflicts) and configure your own secrets via `dotenvx set`
 2. Install dependencies: `npm i`
 3. Run local instance with hot-reloading via `ts-node-dev`: `npm run dev`
 
@@ -48,9 +48,9 @@ to contact him directly if you want to sign up via email due to spam).
 1. Authenicate with [GitLab CLI]: `glab auth login -h mau.dev`
 2. Work on your feature request or bugfix on a seperate branch.
 3. Push often to your personal branch/fork to ensure you don't lose anything when
-switch between machines.
+   switch between machines.
 4. Once ready, just run `glab mr create -R https://mau.dev/andreijiroh-dev/leeksbot -b main`
-and follow prompts.
+   and follow prompts.
 
 [GitLab CLI]: https://gitlab.com/gitlab-org/cli
 [Manimun GitLab instance]: https://mau.dev/andreijiroh-dev/leeksbot
@@ -63,7 +63,7 @@ Although we use GitLab as our development hub, we're still accepting merge reque
 1. Authenicate with [GitHub CLI]: `gh auth login`
 2. Work on your feature request or bugfix on a seperate branch.
 3. Push often to your personal branch/fork to ensure you don't lose anything when
-switch between machines.
+   switch between machines.
 
 [GitHub CLI]: https://cli.github.com
 

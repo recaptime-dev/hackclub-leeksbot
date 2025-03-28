@@ -21,5 +21,4 @@ Sentry.init({
   environment: config.env,
 });
 
-
 export default Sentry;

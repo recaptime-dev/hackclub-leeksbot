@@ -11,11 +11,11 @@ Nest admins before formalizing this data privacy policy.
 
 ## Data we collect and how we process/use it
 
-* Slack user ID
-  * Used for checking permissions throughout the bot and leek flag notifications as well as for moderation purposes.
-* Slack message ID and channel ID
-  * Instead of keeping the original message contents (including file attachments) due to privacy reasons, we only keep these
-  IDs on the database. These may be pruned off the DB if the originals are deleted by the sender or the Fire Department.
+- Slack user ID
+  - Used for checking permissions throughout the bot and leek flag notifications as well as for moderation purposes.
+- Slack message ID and channel ID
+  - Instead of keeping the original message contents (including file attachments) due to privacy reasons, we only keep these
+    IDs on the database. These may be pruned off the DB if the originals are deleted by the sender or the Fire Department.
 
 ## Where we store and keep the data
 

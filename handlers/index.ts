@@ -11,4 +11,4 @@ export const registerHandlers = (slackApp: App) => {
   botComamndsRegistry(slackApp);
   msgShortcutRegistry(slackApp);
   viewRegistry(slackApp);
-}
+};

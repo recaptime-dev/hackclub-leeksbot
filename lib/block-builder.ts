@@ -2,11 +2,11 @@
  * SPDX-License-Identifier: MPL-2.0 AND AGPL-3.0
  * 1
  * @module
- * 
+ *
  * General utilities for building Slack interactive blocks. Imported from
  * the Prox2 source code at https://github.com/anirudhb/prox2/blob/1b94cdbb3f1ac53316688d98252865daea3e5aa9/lib/block_builder.ts,
  * originally under the AGPL-2.0 license
- * 
+ *
  * @license MPL-2.0 AND AGPL-3.0
  */
 
@@ -24,22 +24,25 @@ export abstract class Block extends Renderable {
   }
 }
 
-export abstract class Section extends Block { }
+export abstract class Section extends Block {}
 
-export abstract class Text extends Renderable { }
+export abstract class Text extends Renderable {}
 
 export class PlainText extends Text {
-  constructor(private text: string, private emoji: boolean = true) {
+  constructor(
+    private text: string,
+    private emoji: boolean = true,
+  ) {
     super();
   }
 
   render() {
     let r: any = {
       type: "plain_text",
-      text: this.text
+      text: this.text,
     };
     if (this.emoji == true) r.emoji = true;
-    return r
+    return r;
   }
 }
 
@@ -64,7 +67,7 @@ export class Image extends Renderable {
     // The image URL
     private url: String,
     // the alt text of the image
-    private alttext?: String
+    private alttext?: String,
   ) {
     super();
   }
@@ -73,8 +76,8 @@ export class Image extends Renderable {
     return {
       type: "image",
       image_url: this.url,
-      alt_text: this.alttext
-    }
+      alt_text: this.alttext,
+    };
   }
 }
 
@@ -84,13 +87,13 @@ abstract class Action extends Renderable {
   }
 }
 
-abstract class Accessory extends Renderable { }
+abstract class Accessory extends Renderable {}
 
 export class ExternalSelectAction extends Action implements Accessory {
   constructor(
     private placeholder: Text,
     private min_query_length: number,
-    action_id: string
+    action_id: string,
   ) {
     super(action_id);
   }
@@ -110,7 +113,7 @@ export class TextSection extends Section {
     private text: Text,
     block_id: string | null = null,
     private fields: Text[] | null = null,
-    private accessory: Accessory | null = null
+    private accessory: Accessory | null = null,
   ) {
     super(block_id);
   }
@@ -122,41 +125,40 @@ export class TextSection extends Section {
       accessory: this.accessory?.render(),
     };
     if (this.block_id != null) r.block_id = this.block_id;
-    if (this.fields != null) r.fields = this.fields?.map((field) => field.render())
+    if (this.fields != null)
+      r.fields = this.fields?.map((field) => field.render());
     return r;
   }
 }
 
 /**
  * Create a divider section to visually separates pieces of info inside of a message.
- * 
+ *
  * https://api.slack.com/reference/block-kit/blocks#divider
  */
 export class DividerSection extends Section {
-  constructor(
-    block_id?: string
-  ) {
-    super(block_id)
+  constructor(block_id?: string) {
+    super(block_id);
   }
 
   render(): any {
     let r: any = {
-      type: "divider"
-    }
-    return r
+      type: "divider",
+    };
+    return r;
   }
 }
 
 /**
  * Creates a header block. Requires the use of {@linkcode PlainText}.
- * 
+ *
  * ```ts
  * import { HeaderSection, PlainText } from "./block-builder" // or "https://mau.dev/andreijiroh-dev/leeksbot/raw/main/lib/block-builder.ts"
- * 
+ *
  * const header = new HeaderSection(new PlainText("hellowo"));
  * console.log(header);
  * ```
- * 
+ *
  * https://api.slack.com/reference/block-kit/blocks#header
  */
 export class HeaderSection extends Section {
@@ -170,30 +172,39 @@ export class HeaderSection extends Section {
   render() {
     let r: any = {
       type: "header",
-      text: this.text.render()
-    }
-    return r
+      text: this.text.render(),
+    };
+    return r;
   }
 }
 
-abstract class Input extends Renderable { }
+abstract class Input extends Renderable {}
 
 export class PlainTextInput extends Input {
-  constructor(private action_id: string, private multiline: boolean = false, private initial_value: string = null) {
+  constructor(
+    private action_id: string,
+    private multiline: boolean = false,
+    private initial_value: string = null,
+  ) {
     super();
   }
 
   render(): any {
-    let data: { type: string; multiline: boolean; action_id: string; initial_value?: string } = {
+    let data: {
+      type: string;
+      multiline: boolean;
+      action_id: string;
+      initial_value?: string;
+    } = {
       type: "plain_text_input",
       multiline: this.multiline,
       action_id: this.action_id,
     };
 
     if (typeof this.initial_value == "string") {
-      data.initial_value = this.initial_value
+      data.initial_value = this.initial_value;
     }
-    return data
+    return data;
   }
 }
 
@@ -202,7 +213,7 @@ export class InputSection extends Section {
     private input: Input,
     private label: Text,
     private optional: boolean = false,
-    block_id: string | null = null
+    block_id: string | null = null,
   ) {
     super(block_id);
   }
@@ -213,7 +224,7 @@ export class InputSection extends Section {
       element: this.input.render(),
       label: this.label.render(),
       block_id: this.block_id,
-      optional: this.optional
+      optional: this.optional,
     };
   }
 }
@@ -222,7 +233,7 @@ export class ButtonAction extends Action {
   constructor(
     private text: PlainText,
     private value: string,
-    action_id: string
+    action_id: string,
   ) {
     super(action_id);
   }
@@ -258,8 +269,8 @@ export class ContextSection extends Section {
   render() {
     return {
       type: "context",
-      elements: this.elements.map((element) => element.render())
-    }
+      elements: this.elements.map((element) => element.render()),
+    };
   }
 }
 
