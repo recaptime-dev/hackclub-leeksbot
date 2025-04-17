@@ -18,7 +18,15 @@ type BotEnvConfig = {
   port: number;
 
   slack: {
+    /**
+     * Slack bot token
+     */
     botToken?: string;
+
+    /**
+     * Slack app token for socket mode
+     * @see https://api.slack.com/authentication/quickstart#socket_mode
+     */
     appToken?: string;
     /**
      * Usually set to `true in development instances of the bot (managed via `dotenvx`)

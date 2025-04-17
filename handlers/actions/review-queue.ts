@@ -256,7 +256,7 @@ export const denyLeekFlagModal = async ({
     let reasonText = entry.rejection_reason ?? "no reason provided";
 
     if (entry.status == SlackLeeksStatus.Rejected) {
-      introText = `You are about to update the rejection reason for this leek flag with message \`${value}\` from <@${entry.first_flagged_by}>. The reason for the rejection from the database is \`${reasonText}, so updating it may notify the original flagger via DMs.`;
+      introText = `You are about to update the rejection reason for this leek flag with message \`${value}\` from <@${entry.first_flagged_by}>. The reason for the rejection from the database is \`${reasonText}\`, so updating it may notify the original flagger via DMs.`;
     }
 
     let autofill: string | null;

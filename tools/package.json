@@ -20,6 +20,7 @@
   "homepage": "https://gitlab.com/recaptime-dev/hackclub-leeksbot#readme",
   "dependencies": {
     "@dotenvx/dotenvx": "^1.38.4",
+    "@slack/logger": "^4.0.0",
     "tsx": "^4.19.3",
     "yaml": "^2.7.0"
   },

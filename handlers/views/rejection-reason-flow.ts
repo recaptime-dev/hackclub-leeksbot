@@ -92,35 +92,38 @@ export const rejectionReasonHandler = async ({
       });
 
       // update review queue message first and reply
+      let editedBlocks = [
+        originalMessageEmbeds.blocks[0],
+        originalMessageEmbeds.blocks[1],
+        originalMessageEmbeds.blocks[2],
+        originalMessageEmbeds.blocks[3],
+        new TextSection(
+          new MarkdownText(`:x: Denied by <@${user.id}>`),
+        ).render(),
+        new ActionsSection([
+          new ButtonAction(
+            new PlainText("Edit rejection reason", true),
+            entry.message_id,
+            "update_denial_reason",
+          ),
+          new ButtonAction(
+            new PlainText("Requeue", true),
+            entry.message_id,
+            "queue_for_review",
+          ),
+        ]),
+        new ContextSection([
+          new MarkdownText(
+            `Original message ID on database: \`${entry.message_id}\``,
+          ),
+        ]).render(),
+      ]
+
+      logOps.debug("block-kit-dbg", editedBlocks)
       await client.chat.update({
         channel: queueChannel,
         ts: entry.review_queue_id,
-        blocks: [
-          originalMessageEmbeds.blocks[0],
-          originalMessageEmbeds.blocks[1],
-          originalMessageEmbeds.blocks[2],
-          originalMessageEmbeds.blocks[3],
-          new TextSection(
-            new MarkdownText(`:x: Denied by <@${user.id}>`),
-          ).render(),
-          new ActionsSection([
-            new ButtonAction(
-              new PlainText("Edit rejection reason", true),
-              entry.message_id,
-              "update_denial_reason",
-            ),
-            new ButtonAction(
-              new PlainText("Requeue", true),
-              entry.message_id,
-              "queue_for_review",
-            ),
-          ]),
-          new ContextSection([
-            new MarkdownText(
-              `Original message ID on database: \`${entry.message_id}\``,
-            ),
-          ]).render(),
-        ],
+        blocks: editedBlocks
       });
       await client.chat.postMessage({
         channel: queueChannel,

@@ -66,11 +66,7 @@ const current = [
       { icon: "slack", link: "https://hackclub.slack.com/team/U014E8132DB" },
       { icon: "github", link: "https://github.com/DevIos01"}
     ]
-  }
-]
-
-// former/inactive team members go here
-const alumni = [
+  },
   {
     avatar: "https://ca.slack-edge.com/T0266FRGM-U020X4GCWSF-0862898e16cc-512",
     name: "Rushil",
@@ -78,7 +74,11 @@ const alumni = [
     links: [
       { icon: "github", link: "https://github.com/WolfGamer2"}
     ]
-  },
+  }
+]
+
+// former/inactive team members go here
+const alumni = [
 ]
 </script>
 
