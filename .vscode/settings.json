@@ -13,8 +13,12 @@
     "slackApp",
     "global",
     "vitepress",
-    "scripts"
+    "scripts",
+    "idx"
   ],
   "conventionalCommits.autoCommit": false,
-  "conventionalCommits.showEditor": true
+  "conventionalCommits.showEditor": true,
+  "IDX.aI.enableInlineCompletion": true,
+  "IDX.aI.enableCodebaseIndexing": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
