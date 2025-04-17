@@ -42,10 +42,10 @@
     "url": "https://github.com/sponsors/ajhalili2006"
   },
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.39.0",
-    "@prisma/client": "^6.5.0",
-    "@sentry/node": "^9.10.1",
-    "@sentry/profiling-node": "^9.10.1",
+    "@dotenvx/dotenvx": "^1.40.1",
+    "@prisma/client": "^6.6.0",
+    "@sentry/node": "^9.13.0",
+    "@sentry/profiling-node": "^9.13.0",
     "@slack/bolt": "^4.2.1",
     "@slack/logger": "^4.0.0",
     "@slack/web-api": "^7.9.1",
@@ -55,10 +55,10 @@
     "yaml": "^2.7.1"
   },
   "devDependencies": {
-    "@types/node": "^22.13.14",
-    "npm-check-updates": "^17.1.16",
-    "prisma": "^6.5.0",
+    "@types/node": "^22.14.1",
+    "npm-check-updates": "^17.1.18",
+    "prisma": "^6.6.0",
     "tslib": "^2.8.1",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   }
 }
