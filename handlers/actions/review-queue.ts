@@ -464,12 +464,25 @@ export const ignore_leek = async ({
   // ack first
   await ack();
 
+  logOps.debug(`review-queue`, `received event data:`, JSON.stringify(body))
+  logOps.debug(`review-queue`, `received actions payload`, JSON.stringify(body.actions))
+
   // get DB data before doing anything
   const entry = await prisma.slackLeeks.findFirst({
     where: {
-      review_queue_id: body.actions[0].value,
+      message_id: body.actions[0].value,
     },
   });
+
+  logOps.info(`review-queue:${body.actions[0].value}`, `DB result:`, entry)
+  if (typeof entry == "undefined") {
+    logOps.info(
+      `review-queue:${body.actions[0].value}`,
+      `DB result is blank, returning`,
+    );
+    return
+  }
+
   logOps.info(
     `review-queue:${entry.message_id}`,
     `ignoring and deleting review_queue message`,
