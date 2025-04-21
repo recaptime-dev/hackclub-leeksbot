@@ -14,6 +14,7 @@ import {
   ReactionRemovedEvent,
   WebClient,
 } from "@slack/web-api";
+import * as blocksKitBuilder from "./block-builder"
 
 /**
  * Extracts the last part of Slack message permalink through some regex.
@@ -157,16 +158,31 @@ export async function catchExceptionAndReplyError(
     },
     user,
   });
+  logOps.info(`error-telemetry`, errorId);
 
-  // only notify the user if in slash commands
+  // only notify the user if in slash commands or in submission flow
   if ("command" in data && "user_id" in data && "channel_id" in data) {
     await client.chat.postEphemeral({
       channel: data.channel_id,
       user: data.user_id,
       text: `An error occurred while processing your command. The error has been reported to the developers wtih Sentry error ID \`${errorId}\`.`,
     });
+  } else if (data.type == "view_submission") {
+    await client.views.update({
+      view_id: data.view.id,
+      hash: data.view.hash,
+      view: {
+        title: new blocksKitBuilder.PlainText("Something went wrong").render(),
+        type: "modal",
+        blocks: new blocksKitBuilder.Blocks([
+          new blocksKitBuilder.TextSection(
+            new blocksKitBuilder.MarkdownText(`An error occurred while processing your command. The error has been reported to the developers wtih Sentry error ID \`${errorId}\`.`)
+          )
+        ]).render()
+      }
+    })
   } else {
-    logOps.info(`error-telemetry`, errorId);
+    return
   }
 }
 
