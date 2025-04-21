@@ -29,22 +29,23 @@ original message contents in database and keep file attachments somewhere else.
 
 [restrictions on data scraping/mining]: https://hackclub.slack.com/archives/C0188CY57PZ/p1727208216604979
 
-[^1]: The thread we linked is not necessarily the policy itself, but
+[^1]: The thread we linked is not necessarily the policy itself, but it is the meta discussion regarding that for clarifications in the Hack Club Slack.
 
 ## How to request?
 
 You can request a public channel to be allowlisted for leeks flagging at the
 `#leeksbot-meta` Slack channel or via the issue tracker. Note that once a
-public channel becomes private, the bot should remove the allowlist status
-on the next flag.
+public channel becomes private, the bot will no longer accept new leek flags
+after that unless the channel in question becomes public again.
 
 ## Can I still flag things outside of the allowlist?
 
-You can still, but it will be dequeued by default as it is not yet allowlisted:
+You can still, but it will be dequeued by default as it is not yet allowlisted for
+leek flagging as shown in the confirmation message via DMs below.
 
 ![Notification via DMs](https://cdn.hack.pet/slackcdn/781c5e00d31b15a8d4c6ef35135a2396.png)
 
-On our side, this would be look like in the review queue channel, with two buttons either to add it back
-to the queue or just make it vanish.
+On our side, this would be look like in the review queue channel, with two buttons either to
+add it back to the queue or just make it vanish on our queue channel.
 
 ![admin side](https://cdn.fluff.pw/slackcdn/c6877cfea11427ff6a477fd0d1a1621c.png)
