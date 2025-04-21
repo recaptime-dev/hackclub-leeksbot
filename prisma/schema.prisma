@@ -5,7 +5,7 @@ generator client {
   provider = "prisma-client"
   output = "./client"
   moduleFormat = "cjs"
-  //binaryTargets = ["native", "linux-musl"]
+  binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
