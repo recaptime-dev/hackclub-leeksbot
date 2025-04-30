@@ -12,7 +12,7 @@ datasource db {
   provider          = "postgresql"
   // to load these database URLs, you need to use dotenvx to decrypt the secrets
   url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  //shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model SlackLeeks {
