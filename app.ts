@@ -2,6 +2,7 @@ import { App, ExpressReceiver, LogLevel } from "@slack/bolt";
 import { registerHandlers } from "./handlers";
 import { config } from "./lib/env";
 import { PrismaClient } from "./prisma/client";
+import { withAccelerate } from '@prisma/extension-accelerate'
 import { env } from "process";
 import { ConsoleLogger } from "@slack/logger";
 import { botAdmins, queueChannel } from "./lib/constants";
@@ -12,7 +13,7 @@ import Sentry from "./lib/sentry";
 import("./lib/sentry.js");
 
 // Globals
-export const prisma = new PrismaClient();
+export const prisma = new PrismaClient().$extends(withAccelerate());
 export const logOps = new ConsoleLogger();
 const routerKit = new ExpressReceiver({
   signingSecret: config.slack.sigSecret,

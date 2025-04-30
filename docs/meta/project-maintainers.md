@@ -145,6 +145,9 @@ contributions (or maintainer activity if they are also building)
 
 ## Onboarding
 
+Once Andrei Jiroh (or another maintainer) confirmed your request to join the review queue
+team
+
 ## Offboarding
 
 If you are inactive for 3 months straight or on temporary suspension, you may

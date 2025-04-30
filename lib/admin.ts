@@ -6,9 +6,42 @@ import {
   PlainText,
   TextSection,
 } from "./block-builder";
-import { metaChannel, queueChannel } from "./constants";
+import { metaChannel, queueChannel, queueTeam } from "./constants";
 import { sendDM } from "./utils";
 
+
+/**
+ * Get a list of current review queue team members via Slack API
+ * @returns Array of Slack user IDs from the API
+ */
+export async function getCurrentAdmins(): Promise<String[]> {
+  const admins = await slackApp.client.usergroups.users.list({
+    usergroup: queueTeam,
+  });
+
+  return admins.users;
+}
+
+/**
+ * Queries against the DB for Slack users with `bot_admin` flag set to `true`,
+ * via `prisma.slackUsers.findMany` method in Prisma Client.
+ * @returns Array of Slack user IDs from the DB
+ */
+export async function getCurrentAdminsFromDb(): Promise<String[]> {
+  const admins = await prisma.slackUsers.findMany({
+    where: {
+      bot_admin: true,
+    },
+  });
+
+  return admins.map((admin) => admin.id);
+}
+
+/**
+ * An async function for checking if a Slack user by ID is an review queue team member.
+ * @param userId Slack user ID in question
+ * @returns Boolean for admin status, currently fetched from DB via Prisma to avoid over-reliance with Slack APIs
+ */
 export async function checkIfAdmin(userId: string): Promise<boolean> {
   const user = await prisma.slackUsers.findFirst({
     where: {
@@ -30,6 +63,13 @@ export async function checkIfAdmin(userId: string): Promise<boolean> {
 }
 
 export async function addAdmin(userId: string, actor: string) {
+  const subteamUsers = await getCurrentAdmins()
+
+  if (subteamUsers.includes(userId)) {
+    await sendDM(actor, `User <@${userId}> is already an admin`)
+    return
+  }
+
   const result = await prisma.slackUsers.upsert({
     where: {
       id: userId,
@@ -50,16 +90,36 @@ export async function addAdmin(userId: string, actor: string) {
 
   await sendDM(
     userId,
-    `You have been promoted as bot admin for leeksbot by <@{actor}>. You should be invited into <#${queueChannel}> and added to`,
+    `You have been promoted as bot admin for leeksbot by <@${actor}>. You should be invited into <#${queueChannel}> and added to <!subteam^${queueTeam}> shortly after this message`,
   );
-  await slackApp.client.conversations.invite({
-    users: userId,
-    channel: queueChannel,
-    force: true,
+
+  // Correctly build the user string for Slack API
+  const updatedUsers = subteamUsers.concat([userId]);
+  const usersString = updatedUsers.join(',');
+
+  await slackApp.client.usergroups.users.update({
+    usergroup: queueTeam,
+    users: usersString,
   });
+
+  return result
 }
 
-export async function removeAdmin(userId: string) {
+export async function removeAdmin(userId: string, actor: string) {
+  if (!(await checkIfAdmin(userId))) {
+    await sendDM(actor, `User <@${userId}> is not currently an member of <!subteam^${queueTeam}>.`)
+    return;
+  }
+
+  const currentUsers = await getCurrentAdmins()
+  const updatedUsers = currentUsers.filter((user) => user !== userId)
+  const usersString = updatedUsers.join(',');
+
+  await slackApp.client.usergroups.users.update({
+    usergroup: queueTeam,
+    users: usersString,
+  });
+
   const result = await prisma.slackUsers.update({
     where: {
       id: userId,

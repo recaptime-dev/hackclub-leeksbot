@@ -8,6 +8,7 @@ import {
   PlainText,
   TextSection,
 } from "../../lib/block-builder";
+import { Prisma } from "../../prisma/client";
 
 export const pingOps = async ({
   respond,
@@ -85,18 +86,23 @@ export const statusOps = async ({
         [
           new MarkdownText("*Message ID*"),
           new MarkdownText(`\`${entry.message_id}\``),
-          new MarkdownText("*Permalink*"),
+          new MarkdownText("*Permalink to original message*"),
           new MarkdownText(permalink),
           new MarkdownText("*First flagged by*"),
           new MarkdownText(`<@${entry.first_flagged_by}>`),
           new MarkdownText("*Status*"),
           new PlainText(entry.status),
+          new MarkdownText("*Rejection reason*"),
+          new MarkdownText(
+            entry.rejection_reason ? `\`${entry.rejection_reason}\`` : "`None`",
+          ),
         ],
       ),
       new ContextSection([
         new MarkdownText(
           "If you use the permalink version of message ID (starts with `p`), this might be inaccurate.",
         ),
+        new MarkdownText(`Data accurate as of ${entry.updated_at || 'no data'}, first added on ${entry.created_at || 'no data' }`)
       ]),
     ]).render(),
   });

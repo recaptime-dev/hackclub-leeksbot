@@ -20,6 +20,7 @@
     PRISMA_SCHEMA_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/schema-engine";
     PRISMA_INTROSPECTION_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/introspection-engine";
 	  PRISMA_FMT_BINARY = "${pkgs.prisma-engines}/bin/prisma-fmt";
+    NODE_ENV = "development";
   };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"

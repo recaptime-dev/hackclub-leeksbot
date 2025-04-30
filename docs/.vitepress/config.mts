@@ -23,6 +23,7 @@ export default defineConfig({
           { text: "Project Maintainers", link: "/meta/project-maintainers" },
           { text: "Contributing to the project", link: "/meta/contributing" },
           { text: "Coding style", link: "/meta/code-style" },
+          { text: "InfraOps", link: "/meta/infraops" }
         ],
       },
     ],
@@ -58,6 +59,10 @@ export default defineConfig({
             text: "Coding style",
             link: "/meta/code-style",
           },
+          { 
+            text: "InfraOps",
+            link: "/meta/infraops"
+          }
         ],
       },
     ],
