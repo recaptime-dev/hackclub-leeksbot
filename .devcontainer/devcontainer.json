@@ -23,21 +23,32 @@
     "ghcr.io/devcontainers-extra/features/tailscale:1": {},
     "ghcr.io/devcontainers/features/sshd:1": {
       "version": "latest"
-    }
-  }
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+			"version": "22"
+		}
+  },
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.
-  // "forwardPorts": [3000, 5432],
+  "forwardPorts": [
+    5050
+  ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  // "postCreateCommand": "yarn install",
+  "postCreateCommand": ". ${NVM_DIR}/nvm.sh && nvm install-latest-npm && nvm use 22",
+  "postStartCommand": "npm install",
 
   // Configure tool-specific properties.
-  // "customizations": {},
+  "portsAttributes": {
+    "5050": {
+      "label": "pgadmin4 dashboard",
+      "onAutoForward": "notify"
+    }
+  }
 
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "root"

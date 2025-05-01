@@ -10,12 +10,13 @@
     "start": "dotenvx run -f .env.production -- tsx app.ts",
     "dev": "dotenvx run -f .env.development -- tsx watch --clear-screen=false app.ts",
     "studio": "npm run studio:dev",
-    "generate:dev": "dotenvx run -f .env.development -- prisma generate --no-engine",
-    "generate:prod": "dotenvx run -f .env.production -- prisma generate --no-engine",
+    "generate": "npm run prisma:generate",
+    "prisma:studio": "npm run studio:dev",
+    "prisma:generate": "prisma generate",
     "migrate:dev": "dotenvx run -f .env.development -- prisma migrate dev",
     "migrate:prod": "dotenvx run -f .env.production -- prisma migrate deploy",
-    "studio:dev": "BROWSER=none dotenvx run -f .env.development-- prisma studio --browser none",
-    "studio:prod": "BROWSER=none dotenvx run -f .env.production -- prisma studio -- browser none",
+    "studio:dev": "BROWSER=none dotenvx run -f .env.development -- prisma studio",
+    "studio:prod": "BROWSER=none dotenvx run -f .env.production -- prisma studio",
     "manifests:dev": "cd tools && npm run manifests:dev",
     "manifests:prod": "cd tools && npm run manifests:prod",
     "dotenvx:prod": "dotenvx run -f .env.production --",
@@ -43,6 +44,7 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.41.0",
+    "@prisma/adapter-pg": "^6.7.0",
     "@prisma/client": "^6.7.0",
     "@prisma/extension-accelerate": "^1.3.0",
     "@sentry/node": "^9.15.0",
@@ -56,6 +58,7 @@
     "yaml": "^2.7.1"
   },
   "devDependencies": {
+    "@prisma/ppg-tunnel": "^0.3.0",
     "@types/node": "^22.15.3",
     "npm-check-updates": "^18.0.1",
     "prisma": "^6.7.0",

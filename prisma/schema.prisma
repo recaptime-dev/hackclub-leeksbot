@@ -1,62 +1,49 @@
-// This is the Prisma schema file we use for data persistence at leeksbot.
-// Prisma docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client"
-  output = "./client"
-  moduleFormat = "cjs"
+  provider      = "prisma-client"
+  output        = "./client"
+  previewFeatures = ["queryCompiler", "driverAdapters"]
   binaryTargets = ["native", "linux-musl"]
+  moduleFormat  = "cjs"
 }
 
 datasource db {
   provider          = "postgresql"
-  // to load these database URLs, you need to use dotenvx to decrypt the secrets
   url               = env("DATABASE_URL")
-  //shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model SlackLeeks {
-  // message and channel IDs
-  message_id           String  @id @unique
-  channel_id           String // TODO: Turn this into a link to SlackChannels
-  permalink_message_id String? // for now since we need to backfill older entries
-
-  // posted message ID in leeks if approved
+  message_id            String   @id @unique
+  first_flagged_by      String
+  status                String   @default("pending")
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
   leeks_channel_post_id String?
-
-  // for moderation part
-  first_flagged_by String
-  status           String  @default("pending")
-  review_queue_id  String?
-  // taken from High Seas ship feedback
-  is_major_leek    Boolean @default(false)
-  rejection_reason String? // not yet implemented yet
-
-  // anon stats
-  leeks_reacts     Int @default(0)
-  leeks_flags Int @default(0)
-
-  // metadata
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  channel_id            String
+  review_queue_id       String?
+  permalink_message_id  String?
+  is_major_leek         Boolean  @default(false)
+  leeks_flags           Int      @default(0)
+  leeks_reacts          Int      @default(0)
+  rejection_reason      String?
 }
 
 model SlackChannels {
-  id String @id @unique // Slack channel ID
-  allowlisted Boolean @default(false)
-  allowlisted_by String @default("system")
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id             String   @id @unique
+  allowlisted    Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  allowlisted_by String   @default("system")
 }
 
 model SlackUsers {
-  id String @id @unique // Slack user ID
-  bot_admin Boolean @default(false)
-  promoted_by String @default("system")
-  is_banned Boolean @default(false) // just a boolean to check if user is banned for abuse
-  ban_reason String? // used by review queue admins for modlogs
-  banned_by String? @default("system")
-  banned_at DateTime?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id          String    @id @unique
+  bot_admin   Boolean   @default(false)
+  is_banned   Boolean   @default(false)
+  ban_reason  String?
+  banned_by   String?
+  banned_at   DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  promoted_by String?
 }

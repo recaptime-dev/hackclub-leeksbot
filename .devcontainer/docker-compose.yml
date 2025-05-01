@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   app:
     build:
@@ -31,5 +29,18 @@ services:
     # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
+  # Experimental: Login works but we need to do some work with $ALLOWED_HOSTS later
+  pgadmin4:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dev@leeksbot.hackclub.lorebooks.wiki
+      PGADMIN_DEFAULT_PASSWORD: leekedSinceLowSkies2024
+      PGADMIN_LISTEN_PORT: 5050
+    network_mode: service:db
+    volumes:
+      - pgadmin4-data:/var/lib/pgadmin4
+
 volumes:
   postgres-data:
+  pgadmin4-data:

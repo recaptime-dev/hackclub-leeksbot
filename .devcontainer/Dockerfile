@@ -1,12 +1,19 @@
+# pull shellcheck and hadolint from respective docker images
+FROM koalaman/shellcheck:stable as shellcheck
+FROM hadolint/hadolint as hadolint
+
 FROM mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm
 
-# [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
+# HACK: Use Postgres' official package repos
+RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+    | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
+   && echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+    > /etc/apt/sources.list.d/pgdg.list \
+   && apt update \
+   && apt install --no-install-recommends -y postgresql-client-16
 
-# [Optional] Uncomment if you want to install an additional version of node using nvm
-# ARG EXTRA_NODE_VERSION=10
-# RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
+# and dump it here at /usr/local/bin
+COPY --from=shellcheck /bin/shellcheck /usr/local/bin/shellcheck
+COPY --from=hadolint /bin/hadolint /usr/local/bin/hadolint
 
-# [Optional] Uncomment if you want to install more global node modules
-# RUN su node -c "npm install -g <your-package-list-here>"
+# Use devcontainer.json for the rest like Node.js stuff and then some.

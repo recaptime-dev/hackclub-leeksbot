@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# A utility script for running Prisma Postgres tunnel service while pulling the
+# DATABASE_URL variable from dotenvx, either one of the environments or both.
+# SPDX-License-Identifier: MPL-2.0
+
+if [[ $1 == "dev" ]]; then
+  exec npm run dotenvx:dev -- ppg-tunnel --port 5433
+elif [[ $1 == "prod" ]]; then
+  exec npm run dotenvx:prod -- ppg-tunnel --port 5433
+elif [[ $1 == "both" ]]; then
+  exec npx -y concurrently -n "dev|prod" --name-separator "|" "npm run dotenvx:dev -- ppg-tunnel --port 5433" "npm run dotenvx:prod -- ppg-tunnel --port 5434"
+fi
