@@ -1,7 +1,6 @@
 generator client {
   provider      = "prisma-client"
   output        = "./client"
-  previewFeatures = ["queryCompiler", "driverAdapters"]
   binaryTargets = ["native", "linux-musl"]
   moduleFormat  = "cjs"
 }
