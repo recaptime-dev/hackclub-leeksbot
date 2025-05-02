@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "manifests:dev": "dotenvx run -fk ../.env.keys -f ../.env -- tsx ./update-app-manifest.ts",
+    "manifests:dev": "dotenvx run -fk ../.env.keys -f ../.env.development -- tsx ./update-app-manifest.ts",
     "manifests:prod": "dotenvx run -fk ../.env.keys -f ../.env.production -- tsx ./update-app-manifest.ts"
   },
   "repository": {
@@ -19,10 +19,10 @@
   },
   "homepage": "https://gitlab.com/recaptime-dev/hackclub-leeksbot#readme",
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.38.4",
+    "@dotenvx/dotenvx": "^1.42.2",
     "@slack/logger": "^4.0.0",
-    "tsx": "^4.19.3",
-    "yaml": "^2.7.0"
+    "tsx": "^4.19.4",
+    "yaml": "^2.7.1"
   },
   "config": {
     "prisma": {

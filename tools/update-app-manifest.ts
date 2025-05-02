@@ -2,12 +2,12 @@ import * as fs from "fs";
 import * as YAML from "yaml";
 import { WebClient } from "@slack/web-api";
 import { config } from "../lib/env";
-import { env } from "process";
 import { ConsoleLogger } from "@slack/logger";
 
 const logOps = new ConsoleLogger();
 logOps.setName("leeksbot");
 
+// detect environment for manifest file selection
 function detectEnvType() {
   if (config.env == "production") {
     return "prod";
@@ -22,17 +22,16 @@ const manifest = YAML.parse(file);
 
 (async () => {
   try {
-    const app_id = (await client.auth.test()).app_id;
-
+    logOps.info("app-manifest-update", `attempting to update app manifest for ${config.slack.appId}`)
     const result = await client.apps.manifest.update({
       manifest,
-      app_id,
-      token: env.SLACK_APP_MANIFEST_DEPLOY_TOKEN,
+      app_id: config.slack.appId,
+      token: config.slack.appToken,
     });
     logOps.info("app-manifest-update", result)
     return result;
   } catch (error) {
-    logOps.error("app-manifest-update", "Something went wrong while updating", error);
+    logOps.error("app-manifest-update", "Something went wrong while updating", error.code, error.data);
     process.exit(1);
   }
 })();

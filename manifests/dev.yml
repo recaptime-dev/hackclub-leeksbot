@@ -1,9 +1,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/slackapi/manifest-schema/main/manifest.schema.json
+# For setting request URLs for things like interactivity events, slash commands, etc., hop to the
+# app settings at https://app.slack.com/app-settings/T0266FRGM/A07RLJB27M1 (ask @ajhalili2006 for app
+# manager permissions on dev).
 display_information:
   name: Hack Club Leeks Lab
   description: We're testing things for the leeksbot behind the scenes :)
   background_color: "#15a372"
-  long_description: "The development instance of Hack Club Leeks Bot, where we test new features and bug fixes behind the scenes before we ship them to production. If you are contributing to the project and need its credentials, contact @ajhalili2006."
+  long_description: The development instance of Hack Club Leeks Bot, where we test new features and bug fixes behind the scenes before we ship them to production. If you are contributing to the project and need its credentials, contact @ajhalili2006.
 features:
   bot_user:
     display_name: Hack Club Leeks Dev
@@ -15,25 +18,28 @@ features:
       description: "Discreetly forward this message to #hackclub-leeks without the :leeks: reaction"
   slash_commands:
     - command: /leeks-dev
-      description: Access the Leeks bot command
+      description: "Access the Leeksbot slash command [dev]"
       usage_hint: "[help|...]"
       should_escape: true
 oauth_config:
   scopes:
     bot:
       - app_mentions:read
-      - reactions:read
-      - channels:read
       - channels:history
+      - channels:join
+      - channels:read
       - chat:write
-      - im:write # to DM people on flag status, etc.
-      - commands # for slash commands integration
-      - emoji:read # for reacts
-      - channels:join # used by /leeks allowlist
-      - groups:read # private channel convo history reading, as needed on message edits
-      - groups:history # for the modal flow on rejections
-      - mpim:read # only for metadata
-      - im:read # only for metadata
+      - commands
+      - emoji:read
+      - groups:history
+      - groups:read
+      - im:read
+      - im:write
+      - mpim:read
+      - reactions:read
+      - usergroups:read
+      - usergroups:write
+      - users:read
 settings:
   event_subscriptions:
     bot_events:

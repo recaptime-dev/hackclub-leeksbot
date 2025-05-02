@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/slackapi/manifest-schema/main/manifest.schema.json
 display_information:
   name: Hack Club Leeks
   description: "Found a leek? React with :leeks: or use the Flag as leek shortcut."
@@ -42,5 +43,5 @@ settings:
   interactivity:
     is_enabled: true
   org_deploy_enabled: false
-  socket_mode_enabled: true
+  socket_mode_enabled: false
   token_rotation_enabled: false
