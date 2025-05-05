@@ -47,6 +47,29 @@
     "5050": {
       "label": "pgadmin4 dashboard",
       "onAutoForward": "notify"
+    },
+    "5433": {
+      "label": "Prisma Postgres Tunnel",
+      "onAutoForward": "silent"
+    },
+    "5434": {
+      "label": "Prisma Postgres Tunnel",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "doppler.doppler-vscode",
+        "timonwong.shellcheck",
+        "redhat.vscode-yaml",
+        "exiasr.hadolint",
+        "Prisma.prisma",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "vivaxy.vscode-conventional-commits"
+      ]
     }
   }
 

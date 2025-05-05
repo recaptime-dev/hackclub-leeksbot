@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "doppler.doppler-vscode",
+        "timonwong.shellcheck",
+        "redhat.vscode-yaml",
+        "exiasr.hadolint",
+        "Prisma.prisma",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "vivaxy.vscode-conventional-commits"
+    ]
+}

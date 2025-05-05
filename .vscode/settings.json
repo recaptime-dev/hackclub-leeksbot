@@ -14,11 +14,41 @@
     "global",
     "vitepress",
     "scripts",
-    "idx"
+    "idx",
+    "prisma"
   ],
   "conventionalCommits.autoCommit": false,
   "conventionalCommits.showEditor": true,
   "IDX.aI.enableInlineCompletion": true,
   "IDX.aI.enableCodebaseIndexing": true,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use conventional commit message format on the subject line with detailed description of what changed. Keep it below 50 characters for the subject line and 72 for body message."
+    }
+  ],
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5433,
+      "driver": "PostgreSQL",
+      "name": "Prisma Postgres Tunnel #1",
+      "group": "Prisma Postgres",
+      "database": "postgres",
+      "username": "postgres",
+      "password": ""
+    },
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5434,
+      "driver": "PostgreSQL",
+      "name": "Prisma Postgres Tunnel #2",
+      "group": "Prisma Postgres",
+      "database": "postgres",
+      "username": "postgres",
+      "password": ""
+    }
+  ]
 }
