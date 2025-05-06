@@ -1,3 +1,16 @@
 [Unit]
 Description="@hackclub-community/leeksbot in prod"
-Documentation=https://leeksbot.hackclub.lorebooks.wiki/meta/ops
+Documentation=https://leeksbot.hackclub.lorebooks.wiki/meta/infraops
+StartLimitBurst=2
+StartLimitIntervalSec=150s
+
+
+[Service]
+ExecStart=/home/recaptime-dev/.nix-profile/bin/npm start
+WorkingDirectory=/home/recaptime-dev/services/hackclub/leeksbot
+RestartSec=30s
+Restart=on-failure
+
+[Install]
+RequiredBy=network-online.target
+WantedBy=multi-user.target
