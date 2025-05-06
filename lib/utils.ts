@@ -165,7 +165,7 @@ export async function catchExceptionAndReplyError(
     await client.chat.postEphemeral({
       channel: data.channel_id,
       user: data.user_id,
-      text: `An error occurred while processing your command. The error has been reported to the developers wtih Sentry error ID \`${errorId}\`.`,
+      text: `An error occurred while we processing your command. The error has been reported to the developers behind the scenes. If you need help, provide them with this error ID: \`${errorId}\`.`,
     });
   } else if (data.type == "view_submission") {
     await client.views.update({

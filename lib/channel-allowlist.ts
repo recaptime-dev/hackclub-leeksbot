@@ -48,9 +48,11 @@ export async function addChannelToAllowlist(channelId: string, admin: string) {
       create: {
         id: channelId,
         allowlisted: true,
+        allowlisted_by: admin
       },
       update: {
         allowlisted: true,
+        allowlisted_by: admin
       },
     });
 
@@ -98,6 +100,7 @@ export async function removeChannelFromAllowlist(
       },
       data: {
         allowlisted: false,
+        allowlisted_by: ""
       },
     });
 

@@ -105,6 +105,11 @@ export async function promoteUser({
       where: {
         id: userIdMatch ? userIdMatch[1] : params[1],
       },
+      cacheStrategy: {
+        tags: ["userLookup"],
+        ttl: 300,
+        swr: 15
+      }
     });
 
     if (userData.bot_admin == true) {

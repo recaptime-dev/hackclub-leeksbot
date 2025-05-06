@@ -3,10 +3,9 @@ import { helpCommand } from "../../lib/blocks";
 import { logOps } from "../../app";
 import { getBaseSlashCommand } from "../../lib/env";
 import { checkIfAdmin } from "../../lib/admin";
-import { pingOps, statusOps } from "./sub-utils";
+import { pingOps, statusOps, whoisLookup } from "./sub-utils";
 import { addChannelForLeeks, rmChannelForLeeks } from "./sub-admin";
-import Sentry from "../../lib/sentry";
-import { slackEventLogger } from "../../lib/utils";
+import { catchExceptionAndReplyError, slackEventLogger } from "../../lib/utils";
 
 export const botCommandHandler = async ({
   ack,
@@ -95,6 +94,23 @@ export const botCommandHandler = async ({
           `Received queue command from ${user_id} in ${channel_id} (${channel_name})`,
         );
         return;
+      case "whois":
+        logOps.info(
+          "slash-commands:whois",
+          `Received whois command from ${user_id} in ${channel_id} (${channel_name})`);
+        await whoisLookup({
+          ack,
+          respond,
+          payload,
+          say,
+          client,
+          context,
+          logger,
+          next,
+          command: payload,
+          body: payload,
+        })
+        return;
       default:
         if (addChannelAliases.includes(params[0])) {
           logOps.info(
@@ -135,11 +151,16 @@ export const botCommandHandler = async ({
           return;
         }
         await respond({
-          text: `I didn't understand that command or probably unimplemented yet. Try \`${getBaseSlashCommand()} help\`.`,
+          text: `I didn't understand that command or probably unimplemented yet on the backend. Try \`${getBaseSlashCommand()} help\` or <https://leeksbot.hackclub.lorebooks.wiki/user-guide/slash-commands|see the docs>.`,
         });
         return;
     }
   } catch (error) {
-    Sentry.captureException(error);
+    logOps.error(
+      "slash-commands:handler",
+      `Error in slash-commands handler from ${user_id} in ${channel_id} (${channel_name})`,
+      error,
+    );
+    await catchExceptionAndReplyError(payload, client, error);
   }
 };

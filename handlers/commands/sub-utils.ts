@@ -1,6 +1,6 @@
 import { AllMiddlewareArgs, SlackCommandMiddlewareArgs } from "@slack/bolt";
 import { helpCommand } from "../../lib/blocks";
-import { logOps, prisma } from "../../app";
+import { logOps, prisma, slackApp } from "../../app";
 import {
   Blocks,
   ContextSection,
@@ -8,7 +8,9 @@ import {
   PlainText,
   TextSection,
 } from "../../lib/block-builder";
-import { Prisma } from "../../prisma/client";
+import { env } from "process";
+import { hostname } from "os";
+import { SlackUserTypes } from "../../lib/types";
 
 export const pingOps = async ({
   respond,
@@ -17,7 +19,7 @@ export const pingOps = async ({
   client,
 }: AllMiddlewareArgs & SlackCommandMiddlewareArgs) => {
   await respond({
-    text: "We're actually up!",
+    text: `We're actually up! (running in \`${env.NODE_ENV}\` at \`${hostname}\`)`,
   });
 };
 
@@ -41,6 +43,13 @@ export const statusOps = async ({
   const { text } = payload;
   let entry;
   const params = text.split(" ");
+
+  if (params.length < 2) {
+    await respond({
+      text: "Missing message ID (either from Slack API or last part of permalinks)"
+    })
+    return
+  }
 
   // if starts with p, look up by the permalink_message_id string
   if (params[1].startsWith("p")) {
@@ -107,3 +116,84 @@ export const statusOps = async ({
     ]).render(),
   });
 };
+
+export const whoisLookup = async ({
+  respond,
+  payload,
+  say,
+  client,
+}: AllMiddlewareArgs & SlackCommandMiddlewareArgs) => {
+  //await respond(":warning: `whois` subcommand is currently experimential and may be broken at the moment.")
+  const { text } = payload;
+  let entry: SlackUserTypes;
+  const params = text.split(" ");
+  logOps.debug("slash-commands", "params:", params)
+
+  const slackUserLookup = await slackApp.client.users.info({
+    user: params[1] || payload.user_id
+  })
+
+  if (slackUserLookup.ok == false) {
+    await respond(`Something went wrong while looking this user up: \`${slackUserLookup.error}\``)
+    return
+  }
+
+  if (slackUserLookup.ok == true && slackUserLookup.user.deleted == true) {
+    await respond(`User \`${slackUserLookup.user.id}\` (<@${slackUserLookup.user.id}>) is deactivated`)
+    return
+  }
+
+  entry = await prisma.slackUsers.findUniqueOrThrow({
+    where: {
+      id: slackUserLookup.user.id
+    },
+  })
+
+  if (!entry) {
+    entry = await prisma.slackUsers.create({
+      data: {
+        id: slackUserLookup.user.id,
+        bot_admin: false,
+        is_banned: false,
+      }
+    })
+  }
+
+  function parsePromotedByUserField(
+    admin?: SlackUserTypes["promoted_by"]
+  ): string {
+    if (admin == null || admin == undefined) {
+      return "Not an admin"
+    }
+    if (admin == "system") {
+      return "Backend system or database migrations"
+    }
+
+    return `<@${admin}> \`${admin}\``
+  }
+
+  const blocks = new Blocks([
+    new TextSection(
+      new PlainText("Here's what we know about you on our records"),
+      "whois_lookup",
+      [
+        new MarkdownText("*User*"),
+        new MarkdownText(`<@${slackUserLookup.user.id}> (\`${slackUserLookup.user.id}\`)`),
+        new MarkdownText("*Is reviewer/bot admin?*"),
+        new PlainText(`${entry.bot_admin}`),
+        new MarkdownText("*Promoted by*"),
+        new MarkdownText(parsePromotedByUserField(entry.promoted_by)),
+        new MarkdownText("*Is banned?*"),
+        new MarkdownText(`${entry.is_banned}`),
+      ],
+    ),
+    new ContextSection([
+      new MarkdownText(`Data accurate as of ${entry.updated_at || 'no data'}, first known to database on ${entry.created_at || 'no data' }`)
+    ])
+  ]).render()
+
+  logOps.debug("whois", "blocks", JSON.stringify(blocks))
+  await respond({
+    blocks
+  })
+}

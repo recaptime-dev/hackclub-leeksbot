@@ -32,6 +32,11 @@ export async function getCurrentAdminsFromDb(): Promise<String[]> {
     where: {
       bot_admin: true,
     },
+    cacheStrategy: {
+      tags: ["userLookup"],
+      ttl: 300,
+      swr: 15
+    }
   });
 
   return admins.map((admin) => admin.id);
@@ -47,6 +52,11 @@ export async function checkIfAdmin(userId: string): Promise<boolean> {
     where: {
       id: userId,
     },
+    cacheStrategy: {
+      tags: ["userLookup"],
+      ttl: 300,
+      swr: 15
+    }
   });
 
   // log DB result for debugging in production
@@ -137,14 +147,25 @@ export async function checkIfUserBanned(userId: string) {
     where: {
       id: userId,
     },
+    cacheStrategy: {
+      tags: ["userLookup"],
+      ttl: 300,
+      swr: 15
+    }
   });
 
   return user.is_banned || false;
 }
 
 export async function banUser(userId: string, admin: string, reason?: string) {
-  const status = (await prisma.slackUsers.findFirst({ where: { id: userId } }))
-    .is_banned;
+  const status = (await prisma.slackUsers.findFirst({
+    where: { id: userId },
+    cacheStrategy: {
+      tags: ["userLookup"],
+      ttl: 300,
+      swr: 15
+    }
+  })).is_banned;
 
   // Make sure to check if that user ID exists on Slack first
   const user = await slackApp.client.users.info({
@@ -171,7 +192,7 @@ export async function banUser(userId: string, admin: string, reason?: string) {
       where: {
         id: userId,
       },
-      data,
+      data
     });
 
     // notify user about the ban
@@ -208,8 +229,9 @@ export async function banUser(userId: string, admin: string, reason?: string) {
 }
 
 export async function unbanUser(userId: string, admin: string) {
-  const status = (await prisma.slackUsers.findFirst({ where: { id: userId } }))
-    .is_banned;
+  const status = (await prisma.slackUsers.findFirst({
+    where: { id: userId },
+  })).is_banned;
 
   // Make sure to check if that user ID exists on Slack first
   const user = await slackApp.client.users.info({

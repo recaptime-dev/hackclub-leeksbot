@@ -19,15 +19,21 @@ type BotEnvConfig = {
 
   slack: {
     /**
-     * Slack bot token
+     * Slack app ID, mainly used for the update-app-manifest tool script.
      */
-    botToken?: string;
+    appId: string
 
     /**
-     * Slack app token for socket mode
+     * Slack bot token
+     */
+    botToken: string;
+
+    /**
+     * Slack app token for socket mode and using the app manifest update script
      * @see https://api.slack.com/authentication/quickstart#socket_mode
      */
-    appToken?: string;
+    appToken: string;
+
     /**
      * Usually set to `true in development instances of the bot (managed via `dotenvx`)
      */
@@ -49,6 +55,10 @@ type BotEnvConfig = {
     // used for error tracking/backend telemetry, defaults to @recaptime-dev's Sentry project
     dsn: string;
   };
+
+  internalApi: {
+    api_key: string;
+  }
 };
 
 export const config: BotEnvConfig = {
@@ -56,6 +66,7 @@ export const config: BotEnvConfig = {
   db: env.DATABASE_URL,
   port: Number(env.PORT) || 6023,
   slack: {
+    appId: env.SLACK_APP_ID,
     botToken: env.SLACK_BOT_TOKEN,
     appToken: env.SLACK_APP_TOKEN,
     socketMode: env.NODE_ENV != "production",
@@ -72,6 +83,9 @@ export const config: BotEnvConfig = {
       env.SENTRY_DSN ||
       "https://86feb85b378437aca113d95292a505cf@o1146989.ingest.us.sentry.io/4508580657102848",
   },
+  internalApi: {
+    api_key: env.LEEKSBOT_INTERNAL_API_KEY
+  }
 };
 
 export function detectEnvForChannel() {

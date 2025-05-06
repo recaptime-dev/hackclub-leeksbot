@@ -5,20 +5,21 @@ import { PrismaClient } from "./prisma/client";
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { env } from "process";
 import { ConsoleLogger } from "@slack/logger";
-import { botAdmins, queueChannel } from "./lib/constants";
+import { queueChannel } from "./lib/constants";
 import { sendDM } from "./lib/utils";
-import { IncomingMessage, ServerResponse } from "http";
-import { ParamsIncomingMessage } from "@slack/bolt/dist/receivers/ParamsIncomingMessage";
 import Sentry from "./lib/sentry";
+import { ok } from "assert";
 import("./lib/sentry.js");
 
 // Globals
 export const prisma = new PrismaClient().$extends(withAccelerate());
 export const logOps = new ConsoleLogger();
+
 const routerKit = new ExpressReceiver({
   signingSecret: config.slack.sigSecret,
   logger: logOps,
 });
+
 export const slackApp = new App({
   token: config.slack.botToken,
   appToken: config.slack.appToken,
@@ -49,12 +50,40 @@ if (config.slack.socketMode !== true) {
   });
 
   routerKit.app.get("/internals/bot-admins", async (req, res) => {
-    if (!req.header("x-leeksbot-api-token")) {
+    if (!req.header("x-leeksbot-api-token") 
+      || (typeof config.internalApi.api_key == "string"
+        && req.header("x-leeksbot-api-token") != config.internalApi.api_key
+      )) {
       res.status(400).json({
         ok: false,
-        error: "Unauthorized",
+        error: "unauthorized",
       });
+      return;
     }
+
+    const admins = await prisma.slackUsers.findMany({
+      where: {
+        is_banned: false,
+        bot_admin: true
+      },
+      select: {
+        id: true,
+        bot_admin: true,
+        promoted_by: true,
+        created_at: true,
+        updated_at: true
+      },
+      cacheStrategy: {
+        tags: ["internalApi"],
+        swr: 20,
+        ttl: 180
+      }
+    })
+
+    res.json({
+      ok: true,
+      result: admins
+    })
   });
 }
 

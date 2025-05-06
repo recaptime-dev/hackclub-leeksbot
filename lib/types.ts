@@ -1,8 +1,12 @@
 /**
- * Types for the database backend are being worked on here,
- * and currently experimental.
+ * @module
+ * Types for the database backend are being worked on here, and currently experimental.
+ * For up-to-date schema, please see the [Prisma schema file](../prisma/schema.prisma).
  */
 
+/**
+ * The leek flag status states
+ */
 export enum SlackLeeksStatus {
   Pending = "pending",
   Approved = "approved",
@@ -11,6 +15,9 @@ export enum SlackLeeksStatus {
   Ignored = "ignored",
 }
 
+/**
+ * For up-to-date schema, please see the [Prisma schema file](../prisma/schema.prisma).
+ */
 export type SlackLeekTypes = {
   message_id: string;
   channel_id: string;
@@ -27,6 +34,9 @@ export type SlackLeekTypes = {
   readonly updated_at: Date;
 };
 
+/**
+ * For up-to-date schema, please see the [Prisma schema file](../prisma/schema.prisma).
+ */
 export type SlackChannelTypes = {
   id: string;
   allowlisted: boolean;
@@ -34,9 +44,26 @@ export type SlackChannelTypes = {
   readonly updated_at: Date;
 };
 
+/**
+ * For up-to-date schema, please see the [Prisma schema file](../prisma/schema.prisma).
+ */
 export type SlackUserTypes = {
+  /**
+   * Slack user ID
+   */
   id: string;
+  /**
+   * Whether the user can review leek flags and take other admin tasks
+   * at leeks channel.
+   */
   bot_admin: boolean;
+  /**
+   * Slack user ID of the admin who promoted the user in question
+   */
+  promoted_by?: string
+  /**
+   * Wheter the user in question is banned or not
+   */
   is_banned: boolean;
   ban_reason?: string;
   banned_by?: string;
