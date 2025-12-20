@@ -41,12 +41,19 @@
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": ". ${NVM_DIR}/nvm.sh && nvm install-latest-npm && nvm use 22",
   "postStartCommand": "npm install",
+  "postAttachCommand": {
+    "docs": "npm run docs:dev"
+  },
 
   // Configure tool-specific properties.
   "portsAttributes": {
     "5050": {
       "label": "pgadmin4 dashboard",
       "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "vitepress docs preview",
+      "onAutoForward": "openPreview"
     },
     "5433": {
       "label": "Prisma Postgres Tunnel",
