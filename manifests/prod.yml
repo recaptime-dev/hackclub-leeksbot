@@ -1,4 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/slackapi/manifest-schema/main/manifest.schema.json
+# Slack app manifest for https://app.slack.com/app-settings/T0266FRGM/A07QFDAV272 in production
+# mode. Edit Request URL at your own risk.
 display_information:
   name: Hack Club Leeks
   description: "Found a leek? React with :leeks: or use the Flag as leek shortcut."
@@ -18,23 +20,29 @@ features:
       description: Access the Leeks bot command
       usage_hint: "[help|...]"
       should_escape: true
+      url: https://leeksbot.api.recaptime.dev/slack/events
 oauth_config:
   scopes:
     bot:
       - app_mentions:read
-      - reactions:read
-      - channels:read
       - channels:history
+      - channels:join
+      - channels:read
       - chat:write
-      - im:write
       - commands
       - emoji:read
-      - channels:join
+      - groups:history
       - groups:read
-      - mpim:read
       - im:read
+      - im:write
+      - mpim:read
+      - reactions:read
+      - usergroups:read
+      - usergroups:write
+      - users:read
 settings:
   event_subscriptions:
+    request_url: https://leeksbot.api.recaptime.dev/slack/events
     bot_events:
       - reaction_added
       - reaction_removed
@@ -42,6 +50,7 @@ settings:
       - channel_unarchive
   interactivity:
     is_enabled: true
+    request_url: https://leeksbot.api.recaptime.dev/slack/events
   org_deploy_enabled: false
   socket_mode_enabled: false
   token_rotation_enabled: false
