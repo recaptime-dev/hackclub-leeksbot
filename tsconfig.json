@@ -1,17 +1,19 @@
 {
   "compilerOptions": {
     "incremental": true,
-    "module": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "sourceMap": true,
     "moduleDetection": "auto",
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2022",
+    "target": "ES2023",
     "outDir": "./dist",
     "allowJs": true /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */,
-    "checkJs": true
+    "checkJs": true,
+    "esModuleInterop": true
   },
   "exclude": ["node_modules/**", "dist/**"]
 }

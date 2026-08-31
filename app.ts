@@ -1,10 +1,13 @@
-import { App, ExpressReceiver, LogLevel } from "@slack/bolt";
+import 'dotenv/config'
+import bolt from "@slack/bolt";
+const { App, ExpressReceiver } = bolt;
 import { registerHandlers } from "./handlers";
 import { config } from "./lib/env";
-import { PrismaClient } from "./prisma/client";
+import { PrismaClient } from "./prisma/client/client.js";
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { env } from "process";
-import { ConsoleLogger } from "@slack/logger";
+import logger from "@slack/logger";
+const { ConsoleLogger, LogLevel } = logger;
 import { queueChannel } from "./lib/constants";
 import { sendDM } from "./lib/utils";
 import Sentry from "./lib/sentry";
@@ -12,7 +15,9 @@ import { ok } from "assert";
 import("./lib/sentry.js");
 
 // Globals
-export const prisma = new PrismaClient().$extends(withAccelerate());
+export const prisma = new PrismaClient({
+  accelerateUrl: process.env.DATABASE_URL
+}).$extends(withAccelerate());
 export const logOps = new ConsoleLogger();
 
 const routerKit = new ExpressReceiver({

@@ -141,3 +141,6 @@ dist
 docs/.vitepress/dist
 docs/.vitepress/cache
 public/
+
+# prisma client code
+prisma/client
